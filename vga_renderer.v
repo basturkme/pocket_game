@@ -82,8 +82,8 @@ module vga_renderer (
         current_pixel_color = C_BG_COLOR; // Varsayılan arka plan
 
         if (vga_video_enable_in) begin // Sadece aktif çizim alanında çiz
-            automatic [9:0] x = vga_x_in; // always @(*) içinde 'automatic' kullanmak iyi bir pratiktir.
-            automatic [9:0] y = vga_y_in;
+            automatic [9:0] x = vga_x_in;end; // always @(*) içinde 'automatic' kullanmak iyi bir pratiktir.
+            automatic [9:0] y = vga_y_in;end;
 
             // --- Oyun Aşamasına Özel Çizim ---
             case (game_phase_in)

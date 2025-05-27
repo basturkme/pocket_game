@@ -1,29 +1,35 @@
+// clock_divider_functional.v
+// Giriş saat frekansını bölen fonksiyonel saat bölücü modülü
+
 module clock_divider_functional #(
-    parameter DIVISOR = 10 // The factor by which to divide the input clock frequency
+    parameter DIVISOR = 10 // Giriş saat frekansının bölüneceği faktör
 )(
-    input wire clk,
-    input wire reset,
-    output reg clk_out
+    input wire clk,        // Giriş saati
+    input wire reset,      // Aktif yüksek reset
+    output reg clk_out     // Bölünmüş saat çıkışı
 );
 
-    // COUNT_LIMIT determines the number of input clock cycles for half period of clk_out
-    // For clk_out to have period DIVISOR * T_clk_in,
-    // it should toggle every (DIVISOR/2) * T_clk_in.
-    localparam COUNT_MAX_VAL = (DIVISOR / 2) -1; // Counter counts from 0 to COUNT_MAX_VAL
+    // COUNT_MAX_VAL, clk_out'un yarım periyodu için giriş saati döngü sayısını belirler.
+    // clk_out'un periyodunun DIVISOR * T_clk_in olması için,
+    // her (DIVISOR/2) * T_clk_in'de bir durum değiştirmelidir.
+    // Sayaç 0'dan COUNT_MAX_VAL'e kadar sayar.
+    localparam COUNT_MAX_VAL = (DIVISOR / 2) - 1;
 
-    // Determine width of the counter
-    // Add 1 to DIVISOR/2 before $clog2 in case DIVISOR/2 is a power of 2, to ensure enough bits.
-    // e.g. if DIVISOR/2 = 1, count is 0, $clog2(1)=0, needs 1 bit.
-    // if DIVISOR/2 = 2, count is 0,1, $clog2(2)=1, needs 1 bit [0:0] for value 1. No, $clog2(N) bits for values 0 to N-1.
-    // Counter for values 0 to X needs $clog2(X+1) bits.
-    // Here counter goes 0 to (DIVISOR/2)-1. Needs $clog2(DIVISOR/2) bits.
+    // Sayacın genişliğini belirle.
+    // Sayaç 0'dan (DIVISOR/2)-1'e kadar değerler alır.
+    // Bu, DIVISOR/2 adet farklı değer demektir.
+    // Gerekli bit sayısı $clog2(DIVISOR/2)'dir.
+    // Eğer DIVISOR=2 ise, DIVISOR/2=1, $clog2(1)=0. Ancak sayacın '0' değerini tutabilmesi için en az 1 bit gerekir.
+    // Aşağıdaki ifade bu durumu ele alır: [MSB_index : 0]
+    // Eğer $clog2(DIVISOR/2) sonucu 0 ise (DIVISOR=2 durumu), MSB_index 0 olur, yani [0:0].
+    // Eğer $clog2(DIVISOR/2) sonucu N > 0 ise, MSB_index N-1 olur, yani [N-1:0].
     reg [$clog2(DIVISOR/2) > 0 ? $clog2(DIVISOR/2)-1 : 0 :0] count;
 
-
-    initial begin
-        clk_out = 1'b0;
-        count = 0; // Optional, good for simulation
-    end
+    // Başlangıç değerleri reset koşulunda ayarlanır.
+    // initial begin
+    //     clk_out = 1'b0;
+    //     // count = 0; // Reset ile zaten yapılıyor
+    // end
 
     always @(posedge clk or posedge reset) begin
         if (reset) begin
@@ -32,10 +38,11 @@ module clock_divider_functional #(
         end else begin
             if (count == COUNT_MAX_VAL) begin
                 count <= 0;
-                clk_out <= ~clk_out;
+                clk_out <= ~clk_out; // Saat çıkışının durumunu değiştir
             end else begin
                 count <= count + 1;
             end
         end
-    end
+    end
+
 endmodule

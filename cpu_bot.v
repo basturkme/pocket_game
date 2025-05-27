@@ -66,24 +66,26 @@ module cpu_bot (
                                 default: begin cpu_move_left_out <= 1'b0; cpu_move_right_out <= 1'b0; end // Dur
                             endcase
                         end
-                    end else { // Saldırıyorsa hareket etme
+                    end else // Saldırıyorsa hareket etme
                         cpu_move_left_out <= 1'b0;
                         cpu_move_right_out <= 1'b0;
-                    }
-                end else begin
+                    end
+                end 
+				
+					 /*else begin
                     action_timer_reg <= action_timer_reg + 1;
                     // Mevcut eylemi bir süre devam ettir (saldırı hariç)
                     if (cpu_attack_out && action_timer_reg > (ACTION_INTERVAL/4)) begin // Saldırıyı kısa tut
                         cpu_attack_out <= 1'b0;
-                    end
-                end
-            end else begin // Bot aktif değilse
+                    end*/
+                
+            end /*else begin // Bot aktif değilse
                 cpu_move_left_out <= 1'b0;
                 cpu_move_right_out <= 1'b0;
                 cpu_attack_out <= 1'b0;
                 action_timer_reg <= 0;
-            end
-        end
+            end*/
+        
     end
 
 endmodule

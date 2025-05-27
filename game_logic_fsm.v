@@ -56,6 +56,7 @@ module game_logic_fsm (
     localparam P_STATE_IDLE      = 3'b000;
     localparam P_STATE_MOVE_B    = 3'b010; // Geri hareket (bloklama için)
     localparam P_STATE_HITSTUN   = 3'b110;
+	 localparam P_STATE_BLOCKSTUN = 3'b111;
     // Diğer durumlar player_fsm içinde yönetiliyor.
 
     // Sağlık/Blok Puanları

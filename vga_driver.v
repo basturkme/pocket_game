@@ -170,7 +170,7 @@ module vga_driver (
     assign sync = 1'b_0 ;
     assign blank = hysnc_reg & vsync_reg ;
     // The x/y coordinates that should be available on the NEXT cycle
-    assign next_x = (h_state==H_ACTIVE_STATE)?h_counter:10'd_0 ;
-    assign next_y = (v_state==V_ACTIVE_STATE)?v_counter:10'd_0 ;
+    assign next_x = (h_state==H_ACTIVE_STATE)?h_counter:10'd_0;
+    assign next_y = (v_state==V_ACTIVE_STATE)?v_counter:10'd_0;
 
 endmodule
