@@ -285,3 +285,4 @@ set_global_assignment -name VERILOG_FILE seven_segment_driver.v
 set_global_assignment -name VERILOG_FILE game_logic_fsm.v
 set_global_assignment -name VERILOG_FILE player_fsm.v
 set_global_assignment -name VERILOG_FILE input_handler.v
+set_global_assignment -name VERILOG_FILE vga_renderer.v

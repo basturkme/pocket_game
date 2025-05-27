@@ -1,0 +1,2 @@
+module cpu_bot(
+);
