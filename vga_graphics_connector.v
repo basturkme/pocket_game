@@ -1,0 +1,110 @@
+// vga_graphics_connector.v
+module vga_graphics_connector (
+    input wire clk_pixel,       // From vga_driver (its main clock, 25MHz)
+    input wire reset,
+
+    // Game state inputs from game_logic_fsm
+    input wire [1:0] i_game_phase,
+    input wire [9:0] i_p1_x_pos,
+    input wire [9:0] i_p2_x_pos,
+    input wire       i_p1_is_attacking, // NEW: Player 1 is attacking
+    input wire       i_p2_is_attacking, // NEW: Player 2 is attacking
+    // Add other game state inputs as needed (HP, scores, countdown_value etc.)
+
+    // Inputs from VGA Driver (coordinates for next pixel)
+    input wire [9:0] i_vga_next_x,
+    input wire [9:0] i_vga_next_y,
+
+    // Output: color for the current pixel to vga_driver.color_in
+    output [7:0] o_pixel_color_data // RRRGGGBB
+);
+
+    localparam H_DISPLAY = 640; // Match your vga_driver parameters
+    localparam V_DISPLAY = 480; // Match your vga_driver parameters
+    localparam PLAYER_SPRITE_W = 64;
+    localparam PLAYER_SPRITE_H = 100;
+    localparam GROUND_OFFSET_Y = 20; // Offset from bottom for player sprites
+
+    // Attack visual parameters
+    localparam ATTACK_BOX_W = 30;  // Width of the attack visual
+    localparam ATTACK_BOX_H = 20;  // Height of the attack visual
+    // Vertically center the attack box relative to the player sprite
+    localparam ATTACK_BOX_Y_OFFSET = (PLAYER_SPRITE_H / 2) - (ATTACK_BOX_H / 2); 
+
+    // Colors (RRRGGGBB)
+    localparam C_BLACK  = 8'b000_000_00;
+    localparam C_WHITE  = 8'b111_111_11;
+    localparam C_RED    = 8'b111_000_00; // P1 color
+    localparam C_BLUE   = 8'b000_000_11; // P2 color
+    localparam C_GREEN  = 8'b000_111_00;
+    localparam C_BG     = 8'b111_111_11; // white
+    localparam C_ATTACK = 8'b111_110_00; // Yellow for attack visual
+
+    // Internal register to hold the calculated color before assigning to the output
+    reg [7:0] calculated_color;
+
+    // Y coordinates for player sprites' top and bottom edges
+    localparam P_TOP_Y    = V_DISPLAY - PLAYER_SPRITE_H - GROUND_OFFSET_Y;
+    localparam P_BOTTOM_Y = V_DISPLAY - GROUND_OFFSET_Y;
+
+    always @(*) begin
+        // Corrected: Added 'reg' type for automatic variables
+        automatic reg [9:0] x = i_vga_next_x; // Current pixel X
+        automatic reg [9:0] y = i_vga_next_y; // Current pixel Y
+        
+        calculated_color = C_BG; // Default background
+                    
+        // Draw P1 (simple rectangle)
+        if (x >= i_p1_x_pos && x < i_p1_x_pos + PLAYER_SPRITE_W &&
+            y >= P_TOP_Y && y < P_BOTTOM_Y) begin
+            calculated_color = C_;
+        end
+
+        // Draw P2 (simple rectangle)
+        if (x >= i_p2_x_pos && x < i_p2_x_pos + PLAYER_SPRITE_W &&
+            y >= P_TOP_Y && y < P_BOTTOM_Y) begin
+            calculated_color = C_BLUE;
+        end
+
+        // --- ATTACK VISUALS ---
+        // Draw P1 Attack Visual (P1 attacks to its right)
+        if (i_p1_is_attacking) begin
+            // Corrected: Added 'reg' type for automatic variables
+            automatic reg [9:0] p1_attack_x_start = i_p1_x_pos + PLAYER_SPRITE_W;
+            automatic reg [9:0] p1_attack_y_start = P_TOP_Y + ATTACK_BOX_Y_OFFSET;
+
+            if (x >= p1_attack_x_start && x < p1_attack_x_start + ATTACK_BOX_W &&
+                y >= p1_attack_y_start && y < p1_attack_y_start + ATTACK_BOX_H) begin
+                calculated_color = C_ATTACK;
+            end
+        end
+
+        // Draw P2 Attack Visual (P2 attacks to its left)
+        if (i_p2_is_attacking) begin
+            // Corrected: Added 'reg' type for automatic variables
+            automatic reg [9:0] p2_attack_x_start = i_p2_x_pos - ATTACK_BOX_W;
+            automatic reg [9:0] p2_attack_y_start = P_TOP_Y + ATTACK_BOX_Y_OFFSET;
+
+            if (x >= p2_attack_x_start && x < p2_attack_x_start + ATTACK_BOX_W &&
+                y >= p2_attack_y_start && y < p2_attack_y_start + ATTACK_BOX_H) begin
+                calculated_color = C_ATTACK;
+            end
+        end
+
+        // Example: Display game phase as a colored bar at the top
+        // This will overwrite anything else if y < 10
+        if (y < 10) begin
+            case(i_game_phase)
+                2'b00: calculated_color = C_GREEN;  // MENU
+                2'b01: calculated_color = C_WHITE;  // COUNTDOWN
+                2'b10: calculated_color = C_RED;    // GAMEPLAY (Could be different from P1 color)
+                2'b11: calculated_color = C_BLUE;   // GAMEOVER (Could be different from P2 color)
+                default: calculated_color = C_BLACK;
+            endcase
+        end
+    end // End of always @(*) block
+
+    // Assign the combinatorially calculated color to the output net
+    assign o_pixel_color_data = calculated_color;
+
+endmodule

@@ -1,84 +1,102 @@
-//led_driver.v
-// Oyuncu sağlıklarını ve oyun sonu durumunu LED'lerde gösterir.
+// led_driver.v
 module led_driver (
-    input wire clk, // Yanıp sönme efekti için saat (örn: clk_game_logic veya daha yavaşı)
-    input wire reset,
+    input wire       clk_game_logic, // Game logic clock (e.g., 60Hz) for blink timing
+    input wire       reset,
 
-    // Girişler
-    input wire [2:0] p1_health_in, // Oyuncu 1'in kalan sağlığı (0-3)
-    input wire [2:0] p2_health_in, // Oyuncu 2'nin kalan sağlığı (0-3)
-    input wire blink_enable_in,    // Oyun bittiğinde yanıp sönmeyi etkinleştir (game_logic_fsm'den)
-    input wire [1:0] game_phase_in,// Menüde LED'leri kapatmak için
+    input wire [1:0] i_game_phase,      // Input to indicate current game phase
+                                        // Example: 2'b00: MENU, 2'b01: GAMEPLAY/COUNTDOWN, 2'b10: GAMEOVER
 
-    // Çıkışlar (Doğrudan FPGA LED pinlerine bağlanacak)
-    output reg [2:0] p1_health_led_out, // P1 için 3 LED
-    output reg [2:0] p2_health_led_out, // P2 için 3 LED
-    output wire all_leds_physical_out // Bu, pocket_game.v'deki LED_GAME_OVER_BLINK'e bağlanabilir.
-                                     // Eğer tüm LED'ler ayrı ayrı sürülüyorsa, bu çıkış gerekmeyebilir
-                                     // ve yanıp sönme mantığı p1/p2_health_led_out'a uygulanır.
+    input wire [1:0] i_p1_health,       // Player 1 health (0-3, where 3 is full health)
+    input wire [1:0] i_p2_health,       // Player 2 health (0-3)
+
+    output reg [9:0] o_ledr             // Output to drive the 10 LEDs (LEDR[9:0])
 );
 
-    localparam PHASE_MENU = 2'b00;
-    localparam PHASE_GAMEOVER = 2'b11;
+    // Game Phase Parameters (matching example in thought process)
+    localparam PHASE_MENU     = 2'b00;
+    localparam PHASE_GAMEPLAY = 2'b01; // Includes countdown for health display
+    localparam PHASE_GAMEOVER = 2'b10;
 
-    // Yanıp sönme için sayaç (blink_enable_in aktifken)
-    localparam BLINK_RATE_DIVIDER = 30; // 60Hz'de yaklaşık 0.5 saniyede bir durum değiştirir
-    reg [$clog2(BLINK_RATE_DIVIDER)-1:0] blink_counter_reg;
-    reg blink_state_reg; // Yanıp sönme durumu (0 veya 1)
+    // Blinking logic for Game Over mode
+    // For a ~2Hz blink rate (toggle every ~0.25s) with a 60Hz clock:
+    // 0.25s * 60 cycles/s = 15 cycles. Counter goes 0 to 14.
+    localparam BLINK_COUNTER_MAX = 14;
+    reg [$clog2(BLINK_COUNTER_MAX+1)-1:0] blink_counter_reg;
+    reg blink_toggle_reg;
 
     initial begin
         blink_counter_reg = 0;
-        blink_state_reg = 0;
+        blink_toggle_reg = 1'b0;
+        o_ledr = 10'b0;
     end
 
-    always @(posedge clk or posedge reset) begin
+    // Blink clock generator
+    always @(posedge clk_game_logic or posedge reset) begin
         if (reset) begin
             blink_counter_reg <= 0;
-            blink_state_reg <= 1'b0;
+            blink_toggle_reg <= 1'b0;
         end else begin
-            if (blink_enable_in && game_phase_in == PHASE_GAMEOVER) begin
-                if (blink_counter_reg == BLINK_RATE_DIVIDER - 1) begin
+            if (i_game_phase == PHASE_GAMEOVER) begin
+                if (blink_counter_reg == BLINK_COUNTER_MAX) begin
                     blink_counter_reg <= 0;
-                    blink_state_reg <= ~blink_state_reg;
+                    blink_toggle_reg <= ~blink_toggle_reg;
                 end else begin
                     blink_counter_reg <= blink_counter_reg + 1;
                 end
             end else begin
-                blink_counter_reg <= 0; // Yanıp sönme aktif değilse sayacı sıfırla
-                blink_state_reg <= 1'b0;  // LED'ler normalde yanık (veya sönük, tasarıma bağlı)
+                // Reset blinker when not in game over to ensure consistent start
+                blink_counter_reg <= 0;
+                blink_toggle_reg <= 1'b0;
             end
         end
     end
 
-    always @(*) begin
-        if (game_phase_in == PHASE_MENU) begin
-            p1_health_led_out = 3'b000; // Menüde tüm LED'ler sönük
-            p2_health_led_out = 3'b000;
-        end else if (game_phase_in == PHASE_GAMEOVER && blink_enable_in) begin
-            // Tüm LED'ler yanıp söner (sağlığa bakılmaksızın)
-            p1_health_led_out = blink_state_reg ? 3'b111 : 3'b000;
-            p2_health_led_out = blink_state_reg ? 3'b111 : 3'b000;
-        end else begin // Oyun veya geri sayım aşaması
-            // Oyuncu 1 Sağlık LED'leri (3 LED, 3 HP)
-            // HP 3 -> 111, HP 2 -> 011, HP 1 -> 001, HP 0 -> 000
-            case (p1_health_in)
-                3'd3:    p1_health_led_out = 3'b111;
-                3'd2:    p1_health_led_out = 3'b011;
-                3'd1:    p1_health_led_out = 3'b001;
-                default: p1_health_led_out = 3'b000;
-            endcase
+    // Main logic to drive LEDs
+    always @(*) begin // Combinational based on game phase and health
+        case (i_game_phase)
+            PHASE_MENU: begin
+                o_ledr = 10'b0000_000_000; // All LEDs off [cite: 108]
+            end
 
-            // Oyuncu 2 Sağlık LED'leri
-            case (p2_health_in)
-                3'd3:    p2_health_led_out = 3'b111;
-                3'd2:    p2_health_led_out = 3'b011;
-                3'd1:    p2_health_led_out = 3'b001;
-                default: p2_health_led_out = 3'b000;
-            endcase
-        end
+            PHASE_GAMEPLAY: begin
+                // Player 1 Health: Leftmost 3 LEDs (LEDR[9:7]) [cite: 109]
+                // LEDs turn off progressively [cite: 110]
+                // LEDR[7] for health >= 1
+                // LEDR[8] for health >= 2
+                // LEDR[9] for health >= 3
+                reg [9:0] gameplay_leds; // Temporary variable for clarity
+
+                gameplay_leds = 10'b0; // Start with all off
+
+                // P1 Health
+                if (i_p1_health >= 1) gameplay_leds[7] = 1'b1;
+                if (i_p1_health >= 2) gameplay_leds[8] = 1'b1;
+                if (i_p1_health >= 3) gameplay_leds[9] = 1'b1;
+
+                // Player 2 Health: Rightmost 3 LEDs (LEDR[2:0]) [cite: 109]
+                // LEDR[0] for health >= 1
+                // LEDR[1] for health >= 2
+                // LEDR[2] for health >= 3
+                if (i_p2_health >= 1) gameplay_leds[0] = 1'b1;
+                if (i_p2_health >= 2) gameplay_leds[1] = 1'b1;
+                if (i_p2_health >= 3) gameplay_leds[2] = 1'b1;
+                
+                // LEDs LEDR[6:3] are unused for health display
+                o_ledr = gameplay_leds;
+            end
+
+            PHASE_GAMEOVER: begin
+                if (blink_toggle_reg) begin
+                    o_ledr = 10'b1111_111_111; // All LEDs on [cite: 109] (during one phase of blink)
+                end else begin
+                    o_ledr = 10'b0000_000_000; // All LEDs off (during other phase of blink)
+                end
+            end
+
+            default: begin
+                o_ledr = 10'b0000_000_000; // Default to all off
+            end
+        endcase
     end
-
-    // Eğer tüm LED'leri tek bir sinyalle kontrol etmek isteniyorsa:
-    assign all_leds_physical_out = (game_phase_in == PHASE_GAMEOVER && blink_enable_in && blink_state_reg);
 
 endmodule
