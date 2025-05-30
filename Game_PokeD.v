@@ -44,7 +44,7 @@ wire all_leds_blink_cmd_top;
 
 wire [9:0] p1_actual_x_position_out; // Player FSM'den gelen sol kenar X
 wire [2:0] p1_current_state_out;
-wire       p1_is_attacking_active_out; // Player FSM'den: o_hitbox_active
+wire       p1_is_attacking_active_out; // Player FSM'den: hitbox_active
 wire [9:0] p1_current_hitbox_offset_out; // Player FSM'den: hitbox'ın oyuncu önünden mesafesi
 wire [9:0] p1_current_hitbox_width_out;  // Player FSM'den: hitbox genişliği
 wire [9:0] p1_actual_hurtbox_width_out;  // Player FSM'den: oyuncu/hurtbox genişliği
@@ -142,29 +142,29 @@ assign p2_attack_selected_ctrl     = (selected_mode_ctrl == 1'b0) ? p2_human_att
 // --- Player 1 FSM ---
 player_fsm player1_fsm_instance (
     .clk_game_logic(effective_game_logic_clk), .reset(sys_master_reset),
-    .i_move_left(p1_move_left_ctrl), .i_move_right(p1_move_right_ctrl), .i_attack(p1_attack_ctrl),
-    .i_opponent_x_pos(p2_actual_x_position_out),
-    // .i_my_current_x_pos(p1_actual_x_position_out), // player_fsm kendi o_x_pos'unu kullanır
-    .i_am_player1(1'b1),
-    .i_hit_by_opponent(p1_hit_confirm_to_p1_fsm), .i_blocked_attack(p1_block_confirm_to_p1_fsm),
-    .o_x_pos(p1_actual_x_position_out), .o_player_state(p1_current_state_out),
-    .o_hitbox_active(p1_is_attacking_active_out),
-    .o_hitbox_x_offset(p1_current_hitbox_offset_out), .o_hitbox_width(p1_current_hitbox_width_out),
-    .o_hurtbox_width(p1_actual_hurtbox_width_out), .o_facing_right(p1_is_facing_right_out)
+    .move_left(p1_move_left_ctrl), .move_right(p1_move_right_ctrl), .attack(p1_attack_ctrl),
+    .opponent_x(p2_actual_x_position_out),
+    // .i_my_current_x_pos(p1_actual_x_position_out), // player_fsm kendi x_pos_player'unu kullanır
+    .main_player(1'b1),
+    .hit_by_opponent(p1_hit_confirm_to_p1_fsm), .blocked_attack(p1_block_confirm_to_p1_fsm),
+    .x_pos_player(p1_actual_x_position_out), .player_state(p1_current_state_out),
+    .hitbox_active(p1_is_attacking_active_out),
+    .hitbox_vertical_offset(p1_current_hitbox_offset_out), .hitbow_width(p1_current_hitbox_width_out),
+    .hurtbox_width(p1_actual_hurtbox_width_out), .looking_right(p1_is_facing_right_out)
 );
 
 // --- Player 2 FSM ---
 player_fsm player2_fsm_instance (
     .clk_game_logic(effective_game_logic_clk), .reset(sys_master_reset),
-    .i_move_left(p2_move_left_selected_ctrl), .i_move_right(p2_move_right_selected_ctrl), .i_attack(p2_attack_selected_ctrl),
-    .i_opponent_x_pos(p1_actual_x_position_out),
+    .move_left(p2_move_left_selected_ctrl), .move_right(p2_move_right_selected_ctrl), .attack(p2_attack_selected_ctrl),
+    .opponent_x(p1_actual_x_position_out),
     // .i_my_current_x_pos(p2_actual_x_position_out),
-    .i_am_player1(1'b0),
-    .i_hit_by_opponent(p2_hit_confirm_to_p2_fsm), .i_blocked_attack(p2_block_confirm_to_p2_fsm),
-    .o_x_pos(p2_actual_x_position_out), .o_player_state(p2_current_state_out),
-    .o_hitbox_active(p2_is_attacking_active_out),
-    .o_hitbox_x_offset(p2_current_hitbox_offset_out), .o_hitbox_width(p2_current_hitbox_width_out),
-    .o_hurtbox_width(p2_actual_hurtbox_width_out), .o_facing_right(p2_is_facing_right_out)
+    .main_player(1'b0),
+    .hit_by_opponent(p2_hit_confirm_to_p2_fsm), .blocked_attack(p2_block_confirm_to_p2_fsm),
+    .x_pos_player(p2_actual_x_position_out), .player_state(p2_current_state_out),
+    .hitbox_active(p2_is_attacking_active_out),
+    .hitbox_vertical_offset(p2_current_hitbox_offset_out), .hitbow_width(p2_current_hitbox_width_out),
+    .hurtbox_width(p2_actual_hurtbox_width_out), .looking_right(p2_is_facing_right_out)
 );
 
 // Player FSM çıkışlarından game_logic ve vga_graphics için ara sinyaller
