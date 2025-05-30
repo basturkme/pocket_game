@@ -1,313 +1,157 @@
-// player_fsm.v
-// Adapted to follow a two-process FSM style (combinational next-state/output logic, sequential state/register update)
-// with explicit begin-end for all procedural blocks.
+// player_fsm.v (İlgili kısımlar güncellendi)
 module player_fsm (
-    input wire       clk_game_logic, // 60Hz game clock
-    input wire       reset,
-
-    // Control Inputs from Input Handler
-    input wire       i_move_left,
-    input wire       i_move_right,
-    input wire       i_attack,
-
-    // Game Environment Inputs
+    // ... (Port listesi aynı kalır) ...
+    input wire clk_game_logic,
+    input wire reset,
+    input wire i_move_left,
+    input wire i_move_right,
+    input wire i_attack,
     input wire [9:0] i_opponent_x_pos,
-    input wire [9:0] i_my_current_x_pos, // Feedback of this FSM's o_x_pos
-    input wire       i_am_player1,
-    input wire       i_hit_by_opponent,
-    input wire       i_blocked_attack,
-
-    // Outputs
+    input wire i_am_player1,
+    input wire i_hit_by_opponent,
+    input wire i_blocked_attack,
     output reg [9:0] o_x_pos,
-    output reg [3:0] o_player_state,    // Current state of the player
-    output reg       o_hitbox_active,
-    output reg [9:0] o_hitbox_x_offset,
-    output reg [9:0] o_hitbox_width,
-    output wire [7:0] o_hurtbox_width,   // Player sprite width
-    output wire [7:0] o_hurtbox_height,  // Player sprite height
+    output reg [2:0] o_player_state,
+    output reg       o_hitbox_active, // Oyun mekaniği için aktif hitbox
+    output reg [9:0] o_hitbox_x_offset, // Her zaman potansiyel hitbox offset'i
+    output reg [9:0] o_hitbox_width,  // Her zaman potansiyel hitbox genişliği
+    output reg [9:0] o_hurtbox_width,
     output reg       o_facing_right
-	 
 );
 
-    // Parameters (same as before)
-    localparam SCREEN_WIDTH = 640;
-    localparam PLAYER_SPRITE_WIDTH = 64;
-    localparam PLAYER_SPRITE_HEIGHT = 240;
-    localparam MOVE_SPEED_FWD = 3;
-    localparam MOVE_SPEED_BWD = 2;
+    // ... (Parametreler ve Durumlar önceki gibi) ...
+    localparam X_INITIAL_P1 = 10'd100;
+    localparam X_INITIAL_P2 = 10'd500;
+    localparam MOVE_SPEED_FORWARD  = 10'd3;
+    localparam MOVE_SPEED_BACKWARD = 10'd2;
+    localparam SCREEN_MIN_X = 10'd0;
+    localparam SCREEN_MAX_X = 10'd639;
+    localparam PLAYER_WIDTH = 64;
+    localparam ATTACK_HITBOX_OFFSET_VAL = 10'd5; // Potansiyel saldırının varsayılan offset'i
+    localparam ATTACK_HITBOX_WIDTH_VAL  = 10'd30; // Potansiyel saldırının varsayılan genişliği
 
-    localparam STATE_IDLE           = 4'd0;
-    localparam STATE_MOVING_FWD     = 4'd1;
-    localparam STATE_MOVING_BWD     = 4'd2;
-    localparam STATE_ATTACK_STARTUP = 4'd3;
-    localparam STATE_ATTACK_ACTIVE  = 4'd4;
-    localparam STATE_ATTACK_RECOVERY= 4'd5;
-    localparam STATE_HITSTUN        = 4'd6;
-    localparam STATE_BLOCKSTUN      = 4'd7;
-
-    localparam N_ATTK_STARTUP_FRAMES   = 5;
-    localparam N_ATTK_ACTIVE_FRAMES    = 2;
-    localparam N_ATTK_RECOVERY_FRAMES  = 16;
-    localparam N_ATTK_DEFENDER_HITSTUN_FRAMES   = N_ATTK_RECOVERY_FRAMES - 1;
-    localparam N_ATTK_DEFENDER_BLOCKSTUN_FRAMES = N_ATTK_RECOVERY_FRAMES - 3;
-
-    localparam D_ATTK_STARTUP_FRAMES   = 4;
-    localparam D_ATTK_ACTIVE_FRAMES    = 3;
-    localparam D_ATTK_RECOVERY_FRAMES  = 15;
-    localparam D_ATTK_DEFENDER_HITSTUN_FRAMES   = D_ATTK_RECOVERY_FRAMES - 1;
-    localparam D_ATTK_DEFENDER_BLOCKSTUN_FRAMES = D_ATTK_RECOVERY_FRAMES - 3;
-
-    localparam N_ATTK_HITBOX_WIDTH      = 30;
-    localparam D_ATTK_HITBOX_WIDTH      = 20;
-
-    // Current state and internal registers
-    reg [3:0] current_player_state_reg; // Internal current state
-    reg [9:0] x_pos_reg;
-    reg [7:0] state_timer_reg;
-    reg       hitbox_active_reg;
-    reg [9:0] hitbox_x_offset_reg;
-    reg [9:0] hitbox_width_reg;
-    reg       facing_right_reg;
-    reg       current_attack_is_directional_type_reg;
-
-    // Next state and next values for internal registers (calculated combinationally)
-    reg [3:0] next_player_state_calc;
-    reg [9:0] x_pos_next_calc;
-    reg [7:0] state_timer_next_calc;
-    reg       hitbox_active_next_calc;
-    reg [9:0] hitbox_x_offset_next_calc;
-    reg [9:0] hitbox_width_next_calc;
-    reg       facing_right_next_calc;
-    reg       current_attack_is_directional_type_next_calc;
-	 
-	 assign o_hurtbox_width = PLAYER_SPRITE_WIDTH;
-		assign o_hurtbox_height = PLAYER_SPRITE_HEIGHT;
+    localparam S_IDLE           = 3'b000;
+    // ... (Diğer durum tanımları aynı) ...
+    localparam S_MOVE_RIGHT     = 3'b001;
+    localparam S_MOVE_LEFT      = 3'b010;
+    localparam S_ATTACK_START   = 3'b011;
+    localparam S_ATTACK_ACTIVE  = 3'b100;
+    localparam S_ATTACK_COOLDOWN= 3'b101;
+    localparam S_HITSTUN        = 3'b110;
+    localparam S_BLOCKSTUN      = 3'b111;
 
 
-    // Sequential block: Update current state and registers from next values
-    always @(posedge clk_game_logic or posedge reset) begin
-        if (reset) begin
-            current_player_state_reg <= STATE_IDLE;
-            x_pos_reg <= (i_am_player1) ? 100 : SCREEN_WIDTH - 100 - PLAYER_SPRITE_WIDTH;
-            state_timer_reg <= 0;
-            hitbox_active_reg <= 1'b0;
-            hitbox_x_offset_reg <= 0;
-            hitbox_width_reg <= 0;
-            facing_right_reg <= i_am_player1;
-            current_attack_is_directional_type_reg <= 1'b0;
+    reg [2:0] current_state_reg;
+    reg [2:0] next_state_reg;
 
-            o_x_pos <= (i_am_player1) ? 100 : SCREEN_WIDTH - 100 - PLAYER_SPRITE_WIDTH;
-            o_player_state <= STATE_IDLE;
-            o_hitbox_active <= 1'b0;
-            o_hitbox_x_offset <= 0;
-            o_hitbox_width <= 0;
-            o_facing_right <= i_am_player1;
-        end else begin
-            current_player_state_reg <= next_player_state_calc;
-            x_pos_reg <= x_pos_next_calc;
-            state_timer_reg <= state_timer_next_calc;
-            hitbox_active_reg <= hitbox_active_next_calc;
-            hitbox_x_offset_reg <= hitbox_x_offset_next_calc;
-            hitbox_width_reg <= hitbox_width_next_calc;
-            facing_right_reg <= facing_right_next_calc;
-            current_attack_is_directional_type_reg <= current_attack_is_directional_type_next_calc;
-
-            o_player_state <= current_player_state_reg;
-            o_x_pos <= x_pos_reg;
-            o_hitbox_active <= hitbox_active_reg;
-            o_hitbox_x_offset <= hitbox_x_offset_reg;
-            o_hitbox_width <= hitbox_width_reg;
-            o_facing_right <= facing_right_reg;
-        end
-    end
-    
-    // Assign constant outputs
-    assign o_hurtbox_width = PLAYER_SPRITE_WIDTH;
-    assign o_hurtbox_height = PLAYER_SPRITE_HEIGHT;
-
-
-    // Combinational block: Calculate next state and next values for registers/outputs
+    // --- Kombinasyonel Mantık ---
     always @(*) begin
-        next_player_state_calc = current_player_state_reg;
-        x_pos_next_calc = x_pos_reg; 
-        state_timer_next_calc = state_timer_reg;
-        hitbox_active_next_calc = hitbox_active_reg;
-        hitbox_x_offset_next_calc = hitbox_x_offset_reg;
-        hitbox_width_next_calc = hitbox_width_reg;
-        facing_right_next_calc = facing_right_reg;
-        current_attack_is_directional_type_next_calc = current_attack_is_directional_type_reg;
+        next_state_reg        = current_state_reg;
+        o_player_state        = current_state_reg;
+        o_hitbox_active       = 1'b0; // Varsayılan olarak oyun mekaniği hitbox'ı pasif
+        o_hurtbox_width       = PLAYER_WIDTH;
 
-        if (x_pos_reg < i_opponent_x_pos) begin
-            facing_right_next_calc = 1'b1;
-        end else if (x_pos_reg > i_opponent_x_pos) begin
-            facing_right_next_calc = 1'b0;
-        end
-        // else facing_right_next_calc remains its current value (facing_right_reg)
+        // Potansiyel hitbox parametrelerini her zaman ayarla (mevcut duruşa göre)
+        // Bu değerler farklı durumlara veya saldırı tiplerine göre değişebilir.
+        // Şimdilik tek bir varsayılan saldırı tipi için sabit değerler kullanıyoruz.
+        o_hitbox_x_offset     = ATTACK_HITBOX_OFFSET_VAL;
+        o_hitbox_width        = ATTACK_HITBOX_WIDTH_VAL;
 
-        hitbox_active_next_calc = 1'b0; // Default off, enabled only in ATTACK_ACTIVE
-
-        case (current_player_state_reg)
-            STATE_IDLE: begin
-                if (i_hit_by_opponent) begin
-                    next_player_state_calc = STATE_HITSTUN;
-                    state_timer_next_calc = N_ATTK_DEFENDER_HITSTUN_FRAMES - 1;
-                end else if (i_blocked_attack) begin
-                    next_player_state_calc = STATE_BLOCKSTUN;
-                    state_timer_next_calc = N_ATTK_DEFENDER_BLOCKSTUN_FRAMES - 1;
-                end else if (i_attack) begin
-                    next_player_state_calc = STATE_ATTACK_STARTUP;
-                    current_attack_is_directional_type_next_calc = (i_move_left || i_move_right);
-                    state_timer_next_calc = (current_attack_is_directional_type_next_calc ? D_ATTK_STARTUP_FRAMES : N_ATTK_STARTUP_FRAMES) - 1;
-                end else if (i_move_left || i_move_right) begin
-                    if ((facing_right_next_calc && i_move_right) || (!facing_right_next_calc && i_move_left)) begin
-                        next_player_state_calc = STATE_MOVING_FWD;
-                    end else begin
-                        next_player_state_calc = STATE_MOVING_BWD;
-                    end
-                end
+        case (current_state_reg)
+            S_IDLE: begin
+                // ... (önceki IDLE mantığı) ...
+                if (i_hit_by_opponent) next_state_reg = S_HITSTUN;
+                else if (i_attack) next_state_reg = S_ATTACK_START;
+                else if (i_move_left && !i_move_right) next_state_reg = S_MOVE_LEFT;
+                else if (i_move_right && !i_move_left) next_state_reg = S_MOVE_RIGHT;
             end
-
-            STATE_MOVING_FWD: begin
-                reg [9:0] temp_next_x_fwd;
-                if ((facing_right_next_calc && i_move_right) || (!facing_right_next_calc && i_move_left)) begin
-                    if (facing_right_next_calc) begin
-                        temp_next_x_fwd = x_pos_reg + MOVE_SPEED_FWD;
-                        if (temp_next_x_fwd + PLAYER_SPRITE_WIDTH < i_opponent_x_pos) begin
-                            x_pos_next_calc = temp_next_x_fwd;
-                        end else begin
-                            x_pos_next_calc = i_opponent_x_pos - PLAYER_SPRITE_WIDTH;
-                        end
-                    end else begin
-                        temp_next_x_fwd = x_pos_reg - MOVE_SPEED_FWD;
-                        if (temp_next_x_fwd > i_opponent_x_pos + PLAYER_SPRITE_WIDTH) begin
-                            x_pos_next_calc = temp_next_x_fwd;
-                        end else begin
-                            x_pos_next_calc = i_opponent_x_pos + PLAYER_SPRITE_WIDTH;
-                        end
-                    end
-                end
-
-                if (i_hit_by_opponent) begin
-                    next_player_state_calc = STATE_HITSTUN; 
-                    state_timer_next_calc = N_ATTK_DEFENDER_HITSTUN_FRAMES - 1;
-                end else if (i_blocked_attack) begin
-                    next_player_state_calc = STATE_BLOCKSTUN; 
-                    state_timer_next_calc = N_ATTK_DEFENDER_BLOCKSTUN_FRAMES - 1;
-                end else if (i_attack) begin
-                    next_player_state_calc = STATE_ATTACK_STARTUP; 
-                    current_attack_is_directional_type_next_calc = 1'b1;
-                    state_timer_next_calc = D_ATTK_STARTUP_FRAMES - 1;
-                end else if (!((facing_right_next_calc && i_move_right) || (!facing_right_next_calc && i_move_left))) begin
-                    if ((facing_right_next_calc && i_move_left) || (!facing_right_next_calc && i_move_right)) begin
-                        next_player_state_calc = STATE_MOVING_BWD;
-                    end else begin 
-                        next_player_state_calc = STATE_IDLE; 
-                    end
-                end
+            // ... (S_MOVE_LEFT, S_MOVE_RIGHT mantığı önceki gibi) ...
+             S_MOVE_LEFT: begin
+                o_player_state = S_MOVE_LEFT;
+                if (i_hit_by_opponent) next_state_reg = S_HITSTUN;
+                else if (i_attack) next_state_reg = S_ATTACK_START;
+                else if (!i_move_left) next_state_reg = S_IDLE;
             end
-
-            STATE_MOVING_BWD: begin
-                if ((facing_right_next_calc && i_move_left) || (!facing_right_next_calc && i_move_right)) begin
-                     if (facing_right_next_calc) begin
-                        if (x_pos_reg >= MOVE_SPEED_BWD) begin
-                            x_pos_next_calc = x_pos_reg - MOVE_SPEED_BWD; 
-                        end else begin
-                            x_pos_next_calc = 0;
-                        end
-                    end else begin
-                        if (x_pos_reg <= SCREEN_WIDTH - PLAYER_SPRITE_WIDTH - MOVE_SPEED_BWD) begin
-                            x_pos_next_calc = x_pos_reg + MOVE_SPEED_BWD;
-                        end else begin
-                            x_pos_next_calc = SCREEN_WIDTH - PLAYER_SPRITE_WIDTH;
-                        end
-                    end
-                end
-                if (i_blocked_attack) begin
-                    next_player_state_calc = STATE_BLOCKSTUN; 
-                    state_timer_next_calc = N_ATTK_DEFENDER_BLOCKSTUN_FRAMES -1;
-                end else if (i_hit_by_opponent) begin
-                    next_player_state_calc = STATE_HITSTUN; 
-                    state_timer_next_calc = N_ATTK_DEFENDER_HITSTUN_FRAMES -1;
-                end else if (i_attack) begin
-                    next_player_state_calc = STATE_ATTACK_STARTUP; 
-                    current_attack_is_directional_type_next_calc = 1'b1;
-                    state_timer_next_calc = D_ATTK_STARTUP_FRAMES - 1;
-                end else if (!((facing_right_next_calc && i_move_left) || (!facing_right_next_calc && i_move_right))) begin
-                    if ((facing_right_next_calc && i_move_right) || (!facing_right_next_calc && i_move_left)) begin
-                        next_player_state_calc = STATE_MOVING_FWD;
-                    end else begin 
-                        next_player_state_calc = STATE_IDLE; 
-                    end
-                end
+            S_MOVE_RIGHT: begin
+                o_player_state = S_MOVE_RIGHT;
+                if (i_hit_by_opponent) next_state_reg = S_HITSTUN;
+                else if (i_attack) next_state_reg = S_ATTACK_START;
+                else if (!i_move_right) next_state_reg = S_IDLE;
             end
-
-            STATE_ATTACK_STARTUP: begin
-                if (i_hit_by_opponent) begin
-                    next_player_state_calc = STATE_HITSTUN;
-                    state_timer_next_calc = N_ATTK_DEFENDER_HITSTUN_FRAMES - 1;
-                    hitbox_active_next_calc = 1'b0;
-                end else if (state_timer_reg == 0) begin
-                    next_player_state_calc = STATE_ATTACK_ACTIVE;
-                    state_timer_next_calc = (current_attack_is_directional_type_reg ? D_ATTK_ACTIVE_FRAMES : N_ATTK_ACTIVE_FRAMES) - 1;
-                end else begin
-                    state_timer_next_calc = state_timer_reg - 1;
-                end
+            S_ATTACK_START: begin
+                o_player_state = S_ATTACK_START;
+                next_state_reg = S_ATTACK_ACTIVE;
             end
-
-            STATE_ATTACK_ACTIVE: begin
-                hitbox_active_next_calc = 1'b1;
-                hitbox_width_next_calc = (current_attack_is_directional_type_reg ? D_ATTK_HITBOX_WIDTH : N_ATTK_HITBOX_WIDTH);
-                if (facing_right_reg) begin 
-                    hitbox_x_offset_next_calc = PLAYER_SPRITE_WIDTH / 2;
-                end else begin
-                    hitbox_x_offset_next_calc = -(PLAYER_SPRITE_WIDTH / 2) - hitbox_width_next_calc; 
-                end
-
-                if (i_hit_by_opponent) begin
-                    next_player_state_calc = STATE_HITSTUN;
-                    state_timer_next_calc = N_ATTK_DEFENDER_HITSTUN_FRAMES - 1;
-                    hitbox_active_next_calc = 1'b0;
-                end else if (state_timer_reg == 0) begin
-                    next_player_state_calc = STATE_ATTACK_RECOVERY;
-                    state_timer_next_calc = (current_attack_is_directional_type_reg ? D_ATTK_RECOVERY_FRAMES : N_ATTK_RECOVERY_FRAMES) - 1;
-                    hitbox_active_next_calc = 1'b0;
-                end else begin
-                    state_timer_next_calc = state_timer_reg - 1;
-                end
+            S_ATTACK_ACTIVE: begin
+                o_player_state = S_ATTACK_ACTIVE;
+                o_hitbox_active   = 1'b1; // Oyun mekaniği için hitbox BU DURUMDA aktif
+                // o_hitbox_x_offset ve o_hitbox_width zaten yukarıda ayarlandı.
+                next_state_reg = S_ATTACK_COOLDOWN;
             end
-
-            STATE_ATTACK_RECOVERY: begin
-                hitbox_active_next_calc = 1'b0;
-                if (i_hit_by_opponent) begin
-                    next_player_state_calc = STATE_HITSTUN;
-                    state_timer_next_calc = N_ATTK_DEFENDER_HITSTUN_FRAMES - 1;
-                end else if (state_timer_reg == 0) begin
-                    next_player_state_calc = STATE_IDLE;
-                end else begin
-                    state_timer_next_calc = state_timer_reg - 1;
-                end
+            S_ATTACK_COOLDOWN: begin
+                o_player_state = S_ATTACK_COOLDOWN;
+                next_state_reg = S_IDLE;
             end
-
-            STATE_HITSTUN: begin
-                hitbox_active_next_calc = 1'b0;
-                if (state_timer_reg == 0) begin
-                    next_player_state_calc = STATE_IDLE;
-                end else begin
-                    state_timer_next_calc = state_timer_reg - 1;
-                end
+            S_HITSTUN: begin
+                o_player_state = S_HITSTUN;
+                next_state_reg = S_IDLE;
             end
-
-            STATE_BLOCKSTUN: begin
-                hitbox_active_next_calc = 1'b0;
-                if (state_timer_reg == 0) begin
-                    next_player_state_calc = STATE_IDLE;
-                end else begin
-                    state_timer_next_calc = state_timer_reg - 1;
-                end
+            S_BLOCKSTUN: begin
+                o_player_state = S_BLOCKSTUN;
+                next_state_reg = S_IDLE;
             end
             default: begin
-                next_player_state_calc = STATE_IDLE;
+                next_state_reg = S_IDLE;
             end
         endcase
+    end
+
+    // --- Sekansiyel Mantık ---
+    always @(posedge clk_game_logic or posedge reset) begin
+        if (reset) begin
+            current_state_reg <= S_IDLE;
+            o_x_pos           <= i_am_player1 ? X_INITIAL_P1 : X_INITIAL_P2;
+            o_facing_right    <= i_am_player1 ? 1'b1 : 1'b0;
+        end else begin
+            current_state_reg <= next_state_reg;
+            // ... (Pozisyon güncelleme ve Yön güncelleme mantığı bir önceki yanıttaki gibi kalacak) ...
+            // Yön güncelleme mantığı
+            if (next_state_reg == S_IDLE || next_state_reg == S_MOVE_LEFT || next_state_reg == S_MOVE_RIGHT) begin
+                if (i_move_left && !i_move_right) begin
+                    o_facing_right <= 1'b0;
+                end else if (i_move_right && !i_move_left) begin
+                    o_facing_right <= 1'b1;
+                end else begin
+                    if ((o_x_pos + (PLAYER_WIDTH / 2)) < (i_opponent_x_pos + (PLAYER_WIDTH / 2))) begin
+                        o_facing_right <= 1'b1;
+                    end else if ((o_x_pos + (PLAYER_WIDTH / 2)) > (i_opponent_x_pos + (PLAYER_WIDTH / 2))) begin
+                        o_facing_right <= 1'b0;
+                    end
+                end
+            end
+
+            // Pozisyon güncelleme
+            if (next_state_reg == S_MOVE_LEFT) begin
+                automatic reg is_moving_forward_calc;
+                automatic reg [9:0] current_move_speed_calc;
+                is_moving_forward_calc = !o_facing_right;
+                current_move_speed_calc = is_moving_forward_calc ? MOVE_SPEED_FORWARD : MOVE_SPEED_BACKWARD;
+                if (o_x_pos >= SCREEN_MIN_X + current_move_speed_calc) begin
+                    o_x_pos <= o_x_pos - current_move_speed_calc;
+                end else begin
+                    o_x_pos <= SCREEN_MIN_X;
+                end
+            end else if (next_state_reg == S_MOVE_RIGHT) begin
+                automatic reg is_moving_forward_calc;
+                automatic reg [9:0] current_move_speed_calc;
+                is_moving_forward_calc = o_facing_right;
+                current_move_speed_calc = is_moving_forward_calc ? MOVE_SPEED_FORWARD : MOVE_SPEED_BACKWARD;
+                if (o_x_pos <= SCREEN_MAX_X - PLAYER_WIDTH + 1 - current_move_speed_calc) begin
+                    o_x_pos <= o_x_pos + current_move_speed_calc;
+                end else begin
+                    o_x_pos <= SCREEN_MAX_X - PLAYER_WIDTH + 1;
+                end
+            end
+        end
     end
 endmodule
