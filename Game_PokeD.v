@@ -250,11 +250,18 @@ vga_graphics_connector graphics_conn_inst (
     .i_game_phase(game_phase_from_fsm),
     .i_p1_is_attacking(p1_attacking_for_logic_and_vga),
     .i_p2_is_attacking(p2_attacking_for_logic_and_vga),
+
     .i_p1_hitbox_x1(p1_hitbox_x1_calc), .i_p1_hitbox_x2(p1_hitbox_x2_calc),
     .i_p1_hurtbox_x1(p1_hurtbox_x1_calc), .i_p1_hurtbox_x2(p1_hurtbox_x2_calc),
     .i_p2_hitbox_x1(p2_hitbox_x1_calc), .i_p2_hitbox_x2(p2_hitbox_x2_calc),
     .i_p2_hurtbox_x1(p2_hurtbox_x1_calc), .i_p2_hurtbox_x2(p2_hurtbox_x2_calc),
-    .i_show_hitboxes_continuously(i_show_hitboxes_continuously_sw), // SW[5]'ten gelen toggle sinyali
+
+    .i_show_hitboxes_continuously(i_show_hitboxes_continuously_sw),
+
+    // YENİ GİRİŞLER: Oyuncu FSM durumları
+    .i_p1_fsm_state(p1_current_state_out),
+    .i_p2_fsm_state(p2_current_state_out),
+
     .i_vga_next_x(vga_driver_next_x),
     .i_vga_next_y(vga_driver_next_y),
     .o_pixel_color_data(pixel_color_from_graphics)
