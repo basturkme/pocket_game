@@ -1,0 +1,19 @@
+-- begin_signature
+-- ui_rom
+-- end_signature
+WIDTH=8;
+DEPTH=8;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=BIN;
+
+CONTENT BEGIN
+	7 :	11111111;
+	6 :	10000000;
+	5 :	10000000;
+	4 :	10000000;
+	3 :	11111111;
+	2 :	10000000;
+	1 :	10000000;
+	0 :	11111111;
+END;

@@ -1,0 +1,307 @@
+// vga_graphics_connector.v
+// - SON SÜRÜM -
+// - Çizim mantığı, katmanlı ve öncelikli bir yapıya dönüştürülmüştür.
+// - Zamanlayıcı ve diğer tüm arayüz elemanlarının doğru şekilde çizilmesi garanti altına alınmıştır.
+module vga_graphics_connector (
+    input wire clk_pixel,
+    input wire reset,
+    input wire [1:0] i_game_phase,
+    input wire         i_p1_is_attacking,
+    input wire         i_p2_is_attacking,
+    input wire [2:0] i_p1_hp, 
+    input wire [2:0] i_p2_hp, 
+    input wire [2:0] i_p1_bp,
+    input wire [2:0] i_p2_bp,
+    input wire [1:0] i_winner_info, 
+    input wire [6:0] i_countdown_value,
+    input wire [9:0] i_p1_hitbox_x1, i_p1_hitbox_x2,
+    input wire [9:0] i_p1_hurtbox_x1, i_p1_hurtbox_x2,
+    input wire [9:0] i_p2_hitbox_x1, i_p2_hitbox_x2,
+    input wire [9:0] i_p2_hurtbox_x1, i_p2_hurtbox_x2,
+    input wire         i_show_hitboxes_continuously,
+    input wire [2:0] i_p1_fsm_state,
+    input wire [2:0] i_p2_fsm_state,
+    input wire         i_p1_is_facing_right,
+    input wire         i_p2_is_facing_right,
+    input wire         i_p1_is_in_recovery,
+    input wire         i_p2_is_in_recovery,
+	 
+    input wire [9:0] i_vga_next_x,
+    input wire [9:0] i_vga_next_y,
+    output reg [7:0] o_pixel_color_data
+);
+
+    // --- Sabit Tanımlamaları ---
+    localparam H_DISPLAY = 640, V_DISPLAY = 480, PLAYER_SPRITE_H = 100, GROUND_OFFSET_Y = 20;
+    localparam GAME_PHASE_MENU=2'b00, GAME_PHASE_COUNTDOWN=2'b01, GAME_PHASE_GAMEPLAY=2'b10, GAME_PHASE_GAMEOVER=2'b11;
+    localparam C_BLACK=8'h00, C_WHITE=8'hFF, C_P1_MAIN_GREEN=8'h38, C_P2_MAIN_BLUE=8'h03, C_ATTACK_HITBOX_YELLOW=8'hFC, C_PLAYER_BLOCKING_RED=8'hE0, C_HIT_STUN_ORANGE=8'hE4, C_OVERLAP_RED=8'hE0, C_SOIL_BROWN=8'h88, C_MENU_BACKGROUND_GRAY=8'h49, C_MENU_ITEM_NORMAL_BLACK=8'h00, C_MENU_ITEM_HIGHLIGHT_BLUE=8'h03, C_MENU_TEXT_WHITE=8'hFF, C_COUNTDOWN_TEXT_COLOR=8'hFC, C_GO_TEXT_COLOR=8'h38, C_GAMEOVER_TEXT_COLOR=8'hE0;
+    localparam C_HP_HEART_FULL=8'hE0, C_HP_HEART_EMPTY=8'h6D, C_BP_HEART_FULL=8'h03, C_BP_HEART_EMPTY=8'h24, C_SHIELD_BLUE=8'b001_011_11;
+    localparam HEART_WIDTH=12, HEART_HEIGHT=10, HEART_SPACING=4, TOTAL_HEARTS_WIDTH=44, P1_HEARTS_START_X=20, HP_HEARTS_Y_POS=20, BP_HEARTS_Y_POS=35, P2_HEARTS_START_X=H_DISPLAY-20-TOTAL_HEARTS_WIDTH, SHIELD_WIDTH=20, SHIELD_HEIGHT=80;
+    localparam FONT_CHAR_WIDTH=8, FONT_CHAR_HEIGHT=8, MENU_TEXT_START_X=290, MENU_TEXT_START_Y=40, PLAY_BUTTON_Y_START=100, PLAY_BUTTON_Y_END=170, EXIT_BUTTON_Y_START=250, EXIT_BUTTON_Y_END=320, BUTTON_X_START=200, BUTTON_X_END=440;
+    localparam COUNTDOWN_TEXT_CENTER_X=320, COUNTDOWN_TEXT_CENTER_Y=240, COUNTDOWN_TEXT_WIDTH_CHARS_SINGLE=1, COUNTDOWN_TEXT_WIDTH_CHARS_DOUBLE=2, COUNTDOWN_TEXT_START_X_SINGLE=316, COUNTDOWN_TEXT_START_X_DOUBLE=312, COUNTDOWN_TEXT_START_Y=236;
+    localparam GAMEOVER_TEXT_CENTER_X=320, GAMEOVER_TEXT_CENTER_Y=240, GAMEOVER_TEXT_WIDTH_CHARS=8, GAMEOVER_TEXT_START_X=GAMEOVER_TEXT_CENTER_X-(FONT_CHAR_WIDTH*GAMEOVER_TEXT_WIDTH_CHARS/2), GAMEOVER_TEXT_START_Y=GAMEOVER_TEXT_CENTER_Y-(FONT_CHAR_HEIGHT/2);
+    localparam P_STATE_OUT_BLOCKING_REF=3'b011, P_STATE_OUT_CHARGING_REF=3'b101, P_STATE_HITSTUN_REF=3'b110, P_STATE_BLOCKSTUN_REF=3'b111;
+    localparam P_FEET_Y=V_DISPLAY-GROUND_OFFSET_Y, P_TOP_Y=P_FEET_Y-PLAYER_SPRITE_H, HITBOX_VISUAL_TOP_Y=P_TOP_Y+35, HITBOX_VISUAL_BOTTOM_Y=P_FEET_Y-35;
+    localparam C_TIMER_TEXT_COLOR = 8'h00;
+    localparam TIMER_Y_POS = 15;
+    localparam TIMER_X_START = 320 - FONT_CHAR_WIDTH;
+    // --- Menü Elemanları için Gerekli Tüm Sabitler ---
+    localparam MENU_BOX_WIDTH = 240, MENU_BOX_HEIGHT = 70;
+    localparam MENU_BOX_CENTER_X = H_DISPLAY / 2;
+    localparam MENU_BOX1_Y_CENTER = 135, MENU_BOX2_Y_CENTER = 285;
+    localparam MENU_BOX_X_START = MENU_BOX_CENTER_X - (MENU_BOX_WIDTH / 2);
+    localparam MENU_BOX_X_END   = MENU_BOX_CENTER_X + (MENU_BOX_WIDTH / 2);
+    localparam MENU_BOX1_Y_START = MENU_BOX1_Y_CENTER - (MENU_BOX_HEIGHT / 2);
+    localparam MENU_BOX1_Y_END   = MENU_BOX1_Y_CENTER + (MENU_BOX_HEIGHT / 2);
+    localparam MENU_BOX2_Y_START = MENU_BOX2_Y_CENTER - (MENU_BOX_HEIGHT / 2);
+    localparam MENU_BOX2_Y_END   = MENU_BOX2_Y_CENTER + (MENU_BOX_HEIGHT / 2);
+
+    localparam TITLE_TEXT_LEN = 4;
+    localparam TEXT_BOX1_LEN = 11;
+    localparam TEXT_BOX2_LEN = 8;
+
+    localparam TITLE_TEXT_X_START = MENU_BOX_CENTER_X - (TITLE_TEXT_LEN * FONT_CHAR_WIDTH / 2);
+    localparam TITLE_TEXT_Y_START = 40;
+    localparam TEXT_BOX1_X_START = MENU_BOX_CENTER_X - (TEXT_BOX1_LEN * FONT_CHAR_WIDTH / 2);
+    localparam TEXT_BOX1_Y_START = MENU_BOX1_Y_CENTER - (FONT_CHAR_HEIGHT / 2);
+    localparam TEXT_BOX2_X_START = MENU_BOX_CENTER_X - (TEXT_BOX2_LEN * FONT_CHAR_WIDTH / 2);
+    localparam TEXT_BOX2_Y_START = MENU_BOX2_Y_CENTER - (FONT_CHAR_HEIGHT / 2);
+
+	     // <<< YENİ: Saldırı renkleri eklendi
+    
+    localparam C_N_ATTACK_P1_COLOR = 8'h3F; // Açık Mavi/Cyan (P1 Duran Saldırı)
+    localparam C_M_ATTACK_P1_COLOR = 8'hF8; // Parlak Kırmızı/Turuncu (P1 Hareketli Saldırı)
+    localparam C_N_ATTACK_P2_COLOR = 8'hC7; // Açık Mor (P2 Duran Saldırı)
+    localparam C_M_ATTACK_P2_COLOR = 8'hFE; // Parlak Sarı (P2 Hareketli Saldırı)
+    // --- yepisyeni ---
+		 // <<< DEĞİŞTİ: FSM durum referansları N_ATK ve M_ATK'yı içerecek şekilde güncellendi
+	 //localparam P_STATE_OUT_BLOCKING_REF      = 3'b011;
+	 localparam P_STATE_OUT_ATTACKING_REF     = 3'b100; // N_ATK için
+	 //localparam P_STATE_OUT_CHARGING_REF      = 3'b101;
+	 localparam P_STATE_OUT_STUNNED_REF       = 3'b110; // HITSTUN ve BLOCKSTUN için ortak
+	 localparam P_STATE_OUT_MOVING_ATTACK_REF = 3'b111; // M_ATK için
+    wire [7:0] current_char_row_data; 
+    reg [7:0] char_code_to_draw; 
+    reg [2:0] char_row_to_draw;
+    ui_rom font_rom_instance (.char_code(char_code_to_draw), .row_index(char_row_to_draw), .char_row_data(current_char_row_data));
+
+    always @(*) begin
+        // --- Değişkenler ---
+        automatic reg [9:0] x_coord = i_vga_next_x;
+        automatic reg [9:0] y_coord = i_vga_next_y;
+        automatic reg [3:0] char_index;
+        automatic reg [2:0] char_pixel_in_row;
+        automatic reg p_in_p1, p_in_p2, p1_hitbox, p2_hitbox, p1_hit_p2, p2_hit_p1, draw_heart_pixel;
+        automatic reg [7:0] p1_color, p2_color;
+        automatic reg [3:0] heart_x, heart_y, timer_tens, timer_units;
+        integer i;
+        
+        // --- Başlangıç Değerleri ---
+        o_pixel_color_data = C_BLACK; 
+        char_code_to_draw = 8'h00;    
+
+        case (i_game_phase)
+            GAME_PHASE_MENU: begin
+				
+
+                // --- YENİ PARAMETRELER (sadece bu blok içinde geçerli) ---
+                localparam TEXT_BOX1_LEN = 12; // "SW 0 TOGGLE" -> 11 karakter
+                localparam TEXT_BOX2_LEN = 11;  // "1P or 2P" -> 8 karakter
+                
+                localparam TEXT_BOX1_X_START = MENU_BOX_CENTER_X - (TEXT_BOX1_LEN * FONT_CHAR_WIDTH / 2);
+                localparam TEXT_BOX1_Y_START = MENU_BOX1_Y_CENTER - (FONT_CHAR_HEIGHT / 2);
+                
+                localparam TEXT_BOX2_X_START = MENU_BOX_CENTER_X - (TEXT_BOX2_LEN * FONT_CHAR_WIDTH / 2);
+                localparam TEXT_BOX2_Y_START = MENU_BOX2_Y_CENTER - (FONT_CHAR_HEIGHT / 2);
+
+                // 1. Arka planı çiz
+                o_pixel_color_data = C_MENU_BACKGROUND_GRAY;
+
+                // 2. Menü kutucuklarını çiz (seçili olan mavi, diğeri siyah)
+                if (y_coord >= MENU_BOX1_Y_START && y_coord <= MENU_BOX1_Y_END && x_coord >= MENU_BOX_X_START && x_coord <= MENU_BOX_X_END) begin
+                    o_pixel_color_data = (i_winner_info == 2'b00) ? C_MENU_ITEM_HIGHLIGHT_BLUE : C_MENU_ITEM_NORMAL_BLACK;
+                end
+                if (y_coord >= MENU_BOX2_Y_START && y_coord <= MENU_BOX2_Y_END && x_coord >= MENU_BOX_X_START && x_coord <= MENU_BOX_X_END) begin
+                    o_pixel_color_data = (i_winner_info == 2'b01) ? C_MENU_ITEM_HIGHLIGHT_BLUE : C_MENU_ITEM_NORMAL_BLACK;
+                end
+
+                // 3. Kutucukların içine yeni yazıları çiz (en üste yazılır)
+					 // "MENU" başlığını çiz
+                if (y_coord >= TITLE_TEXT_Y_START && y_coord < TITLE_TEXT_Y_START + FONT_CHAR_HEIGHT && x_coord >= TITLE_TEXT_X_START && x_coord < TITLE_TEXT_X_START + (TITLE_TEXT_LEN * FONT_CHAR_WIDTH)) begin
+                    char_index = (x_coord - TITLE_TEXT_X_START) / FONT_CHAR_WIDTH;
+                    char_row_to_draw = y_coord - TITLE_TEXT_Y_START;
+                    char_pixel_in_row = (x_coord - TITLE_TEXT_X_START) % FONT_CHAR_WIDTH;
+                    case (char_index)
+                        2'd0: char_code_to_draw = 8'h4D; // M
+                        2'd1: char_code_to_draw = 8'h45; // E
+                        2'd2: char_code_to_draw = 8'h4E; // N
+                        2'd3: char_code_to_draw = 8'h55; // U
+                        default: char_code_to_draw = 8'h00;
+                    endcase
+                    if (current_char_row_data[7 - char_pixel_in_row]) o_pixel_color_data = C_MENU_TEXT_WHITE;
+                end
+                // "SW 0 TOGGLE" yazısını çiz
+                if (y_coord >= TEXT_BOX1_Y_START && y_coord < TEXT_BOX1_Y_START + FONT_CHAR_HEIGHT && x_coord >= TEXT_BOX1_X_START && x_coord < TEXT_BOX1_X_START + (TEXT_BOX1_LEN * FONT_CHAR_WIDTH)) begin
+                    char_index = (x_coord - TEXT_BOX1_X_START) / FONT_CHAR_WIDTH;
+                    char_row_to_draw = y_coord - TEXT_BOX1_Y_START;
+                    char_pixel_in_row = (x_coord - TEXT_BOX1_X_START) % FONT_CHAR_WIDTH;
+                    case (char_index)
+								4'd0:  char_code_to_draw = 8'h54; // T
+								4'd1:  char_code_to_draw = 8'h4F; // O
+								4'd2:  char_code_to_draw = 8'h47; // G
+								4'd3:  char_code_to_draw = 8'h47; // G
+								4'd4:  char_code_to_draw = 8'h4C; // L
+								4'd5:  char_code_to_draw = 8'h45; // E
+								4'd6:  char_code_to_draw = 8'h20; // (boşluk)
+								4'd7:  char_code_to_draw = 8'h53; // S
+								4'd8:  char_code_to_draw = 8'h57; // W
+								4'd9:  char_code_to_draw = 8'h5B; // [
+								4'd10: char_code_to_draw = 8'h30; // 0
+								4'd11: char_code_to_draw = 8'h5D; // ]
+								4'd12:  char_code_to_draw = 8'h20; // (boşluk)
+								default: char_code_to_draw = 8'h00;
+                    endcase
+                    if (current_char_row_data[7 - char_pixel_in_row]) begin
+                        o_pixel_color_data = C_MENU_TEXT_WHITE;
+                    end
+                end
+
+                // "1P or 2P" yazısını çiz
+                if (y_coord >= TEXT_BOX2_Y_START && y_coord < TEXT_BOX2_Y_START + FONT_CHAR_HEIGHT && x_coord >= TEXT_BOX2_X_START && x_coord < TEXT_BOX2_X_START + (TEXT_BOX2_LEN * FONT_CHAR_WIDTH)) begin
+                    char_index = (x_coord - TEXT_BOX2_X_START) / FONT_CHAR_WIDTH;
+                    char_row_to_draw = y_coord - TEXT_BOX2_Y_START;
+                    char_pixel_in_row = (x_coord - TEXT_BOX2_X_START) % FONT_CHAR_WIDTH;
+                    case (char_index)
+								4'd0:  char_code_to_draw = 8'h31; // 1
+                        4'd1:  char_code_to_draw = 8'h50; // P
+                        4'd2:  char_code_to_draw = 8'h5B; // [
+                        4'd3:  char_code_to_draw = 8'h31; // 1
+                        4'd4:  char_code_to_draw = 8'h5D; // ]
+                        4'd5:  char_code_to_draw = 8'h20; // (boşluk)
+                        4'd6:  char_code_to_draw = 8'h32; // 2
+                        4'd7:  char_code_to_draw = 8'h50; // P
+                        4'd8:  char_code_to_draw = 8'h5B; // [
+                        4'd9:  char_code_to_draw = 8'h30; // 0
+                        4'd10: char_code_to_draw = 8'h5D; // ]
+								4'd11:  char_code_to_draw = 8'h20; // (boşluk)
+                        default: char_code_to_draw = 8'h00;
+		
+
+                    endcase
+                    if (current_char_row_data[7 - char_pixel_in_row]) begin
+                        o_pixel_color_data = C_MENU_TEXT_WHITE;
+                    end
+                end
+            end
+
+            GAME_PHASE_COUNTDOWN: begin
+                o_pixel_color_data = C_BLACK;
+                if (i_countdown_value[2:0] > 0) begin
+                     if (y_coord >= COUNTDOWN_TEXT_START_Y && y_coord < COUNTDOWN_TEXT_START_Y + FONT_CHAR_HEIGHT && x_coord >= COUNTDOWN_TEXT_START_X_SINGLE && x_coord < COUNTDOWN_TEXT_START_X_SINGLE + FONT_CHAR_WIDTH) begin
+                         char_row_to_draw = y_coord - COUNTDOWN_TEXT_START_Y; char_pixel_in_row = (x_coord - COUNTDOWN_TEXT_START_X_SINGLE) % FONT_CHAR_WIDTH;
+                         case (i_countdown_value[2:0]) 3'd3: char_code_to_draw=8'h33; 3'd2: char_code_to_draw=8'h32; 3'd1: char_code_to_draw=8'h31; default: char_code_to_draw=8'h00; endcase
+                         if (current_char_row_data[7 - char_pixel_in_row]) o_pixel_color_data = C_COUNTDOWN_TEXT_COLOR;
+                     end
+                end else begin
+                     if (y_coord >= COUNTDOWN_TEXT_START_Y && y_coord < COUNTDOWN_TEXT_START_Y + FONT_CHAR_HEIGHT && x_coord >= COUNTDOWN_TEXT_START_X_DOUBLE && x_coord < COUNTDOWN_TEXT_START_X_DOUBLE + (FONT_CHAR_WIDTH * 2)) begin
+                         char_index = (x_coord - COUNTDOWN_TEXT_START_X_DOUBLE) / FONT_CHAR_WIDTH; char_row_to_draw = y_coord - COUNTDOWN_TEXT_START_Y; char_pixel_in_row = (x_coord - COUNTDOWN_TEXT_START_X_DOUBLE) % FONT_CHAR_WIDTH;
+                         case (char_index) 1'b0: char_code_to_draw=8'h47; 1'b1: char_code_to_draw=8'h4F; default: char_code_to_draw=8'h00; endcase
+                         if (current_char_row_data[7 - char_pixel_in_row]) o_pixel_color_data = C_GO_TEXT_COLOR;
+                     end
+                end
+            end
+
+            GAME_PHASE_GAMEPLAY: begin
+                // --- Çizim için Koşul Hesaplamaları ---
+                p_in_p1 = (x_coord >= i_p1_hurtbox_x1 && x_coord <= i_p1_hurtbox_x2 && y_coord >= P_TOP_Y && y_coord < P_FEET_Y);
+                p_in_p2 = (x_coord >= i_p2_hurtbox_x1 && x_coord <= i_p2_hurtbox_x2 && y_coord >= P_TOP_Y && y_coord < P_FEET_Y);
+                p1_hitbox = (i_show_hitboxes_continuously || i_p1_is_attacking) && (x_coord >= i_p1_hitbox_x1 && x_coord <= i_p1_hitbox_x2 && y_coord >= HITBOX_VISUAL_TOP_Y && y_coord < HITBOX_VISUAL_BOTTOM_Y);
+                p2_hitbox = (i_show_hitboxes_continuously || i_p2_is_attacking) && (x_coord >= i_p2_hitbox_x1 && x_coord <= i_p2_hitbox_x2 && y_coord >= HITBOX_VISUAL_TOP_Y && y_coord < HITBOX_VISUAL_BOTTOM_Y);
+                p1_hit_p2 = i_p1_is_attacking && p1_hitbox && p_in_p2;
+                p2_hit_p1 = i_p2_is_attacking && p2_hitbox && p_in_p1;
+                timer_tens = i_countdown_value / 10;
+                timer_units = i_countdown_value % 10;
+                
+                // --- ÖNCELİKLİ ÇİZİM MANTIĞI ---
+                
+                // 1. Katman (En Arka): Arka Plan
+                if (y_coord >= P_FEET_Y) begin
+                    o_pixel_color_data = C_SOIL_BROWN;
+                end else begin
+                    o_pixel_color_data = C_WHITE;
+                end
+
+                // 2. Katman: Oyuncular ve Kalkanlar
+                if(p_in_p1) begin
+                    if(i_p1_fsm_state == P_STATE_OUT_STUNNED_REF) o_pixel_color_data = C_HIT_STUN_ORANGE;
+                    else if(i_p1_fsm_state == P_STATE_OUT_ATTACKING_REF) o_pixel_color_data = C_N_ATTACK_P1_COLOR;      // P1 Duran Saldırı Rengi
+                    else if(i_p1_fsm_state == P_STATE_OUT_MOVING_ATTACK_REF) o_pixel_color_data = C_M_ATTACK_P1_COLOR; // P1 Hareketli Saldırı Rengi
+                    else if(i_p1_fsm_state == P_STATE_OUT_CHARGING_REF) o_pixel_color_data = C_ATTACK_HITBOX_YELLOW;
+                    else if(i_p1_fsm_state == P_STATE_OUT_BLOCKING_REF) o_pixel_color_data = C_PLAYER_BLOCKING_RED;
+                    else if(i_p1_is_in_recovery) o_pixel_color_data = C_BLACK;
+                    else o_pixel_color_data = C_P1_MAIN_GREEN;
+                end
+                
+                if(p_in_p2) begin
+                    if(i_p2_fsm_state == P_STATE_OUT_STUNNED_REF) o_pixel_color_data = C_HIT_STUN_ORANGE;
+                    else if(i_p2_fsm_state == P_STATE_OUT_ATTACKING_REF) o_pixel_color_data = C_N_ATTACK_P2_COLOR;      // P2 Duran Saldırı Rengi
+                    else if(i_p2_fsm_state == P_STATE_OUT_MOVING_ATTACK_REF) o_pixel_color_data = C_M_ATTACK_P2_COLOR; // P2 Hareketli Saldırı Rengi
+                    else if(i_p2_fsm_state == P_STATE_OUT_CHARGING_REF) o_pixel_color_data = C_ATTACK_HITBOX_YELLOW;
+                    else if(i_p2_fsm_state == P_STATE_OUT_BLOCKING_REF) o_pixel_color_data = C_PLAYER_BLOCKING_RED;
+                    else if(i_p2_is_in_recovery) o_pixel_color_data = C_BLACK;
+                    else o_pixel_color_data = C_P2_MAIN_BLUE;
+                end
+                if(i_p1_fsm_state==P_STATE_OUT_BLOCKING_REF) begin  
+                    automatic reg[9:0]shield_x1,shield_x2; shield_x1=i_p1_is_facing_right?(i_p1_hurtbox_x2+2):(i_p1_hurtbox_x1-SHIELD_WIDTH-2); shield_x2=shield_x1+SHIELD_WIDTH; if(x_coord>=shield_x1&&x_coord<shield_x2&&y_coord>=(P_TOP_Y+10)&&y_coord<(P_FEET_Y-10))o_pixel_color_data=C_SHIELD_BLUE; 
+                end 
+                if(i_p2_fsm_state==P_STATE_OUT_BLOCKING_REF) begin 
+                    automatic reg[9:0]shield_x1,shield_x2; shield_x1=i_p2_is_facing_right?(i_p2_hurtbox_x2+2):(i_p2_hurtbox_x1-SHIELD_WIDTH-2); shield_x2=shield_x1+SHIELD_WIDTH; if(x_coord>=shield_x1&&x_coord<shield_x2&&y_coord>=(P_TOP_Y+10)&&y_coord<(P_FEET_Y-10))o_pixel_color_data=C_SHIELD_BLUE; 
+                end 
+                
+                // 3. Katman: Vuruş Efektleri
+                if(p1_hitbox) o_pixel_color_data = C_ATTACK_HITBOX_YELLOW;
+                if(p2_hitbox) o_pixel_color_data = C_ATTACK_HITBOX_YELLOW;
+                if(p1_hit_p2 || p2_hit_p1) o_pixel_color_data = C_OVERLAP_RED;
+
+                // 4. Katman (En Ön): Arayüz (HUD) - Can Barları ve Zamanlayıcı
+                // Can barları
+                for(i=0; i<3; i=i+1) begin
+                    if(x_coord>=(P1_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING))&&x_coord<(P1_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING)+HEART_WIDTH)&&y_coord>=HP_HEARTS_Y_POS&&y_coord<HP_HEARTS_Y_POS+HEART_HEIGHT)begin heart_x=x_coord-(P1_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING));heart_y=y_coord-HP_HEARTS_Y_POS;draw_heart_pixel=(heart_y==0&&(heart_x==2||heart_x==3||heart_x==7||heart_x==8))||(heart_y==1&&((heart_x>=1&&heart_x<=4)||(heart_x>=6&&heart_x<=9)))||(heart_y>=2&&heart_y<=3&&(heart_x>=0&&heart_x<=10))||(heart_y==4&&(heart_x>=1&&heart_x<=9))||(heart_y==5&&(heart_x>=2&&heart_x<=8))||(heart_y==6&&(heart_x>=3&&heart_x<=7))||(heart_y==7&&(heart_x>=4&&heart_x<=6))||(heart_y==8&&(heart_x==5));if(draw_heart_pixel)o_pixel_color_data=(i_p1_hp>i)?C_HP_HEART_FULL:C_HP_HEART_EMPTY;end
+                    if(x_coord>=(P1_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING))&&x_coord<(P1_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING)+HEART_WIDTH)&&y_coord>=BP_HEARTS_Y_POS&&y_coord<BP_HEARTS_Y_POS+HEART_HEIGHT)begin heart_x=x_coord-(P1_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING));heart_y=y_coord-BP_HEARTS_Y_POS;draw_heart_pixel=(heart_y==0&&(heart_x==2||heart_x==3||heart_x==7||heart_x==8))||(heart_y==1&&((heart_x>=1&&heart_x<=4)||(heart_x>=6&&heart_x<=9)))||(heart_y>=2&&heart_y<=3&&(heart_x>=0&&heart_x<=10))||(heart_y==4&&(heart_x>=1&&heart_x<=9))||(heart_y==5&&(heart_x>=2&&heart_x<=8))||(heart_y==6&&(heart_x>=3&&heart_x<=7))||(heart_y==7&&(heart_x>=4&&heart_x<=6))||(heart_y==8&&(heart_x==5));if(draw_heart_pixel)o_pixel_color_data=(i_p1_bp>i)?C_BP_HEART_FULL:C_BP_HEART_EMPTY;end
+                    if(x_coord>=(P2_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING))&&x_coord<(P2_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING)+HEART_WIDTH)&&y_coord>=HP_HEARTS_Y_POS&&y_coord<HP_HEARTS_Y_POS+HEART_HEIGHT)begin heart_x=x_coord-(P2_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING));heart_y=y_coord-HP_HEARTS_Y_POS;draw_heart_pixel=(heart_y==0&&(heart_x==2||heart_x==3||heart_x==7||heart_x==8))||(heart_y==1&&((heart_x>=1&&heart_x<=4)||(heart_x>=6&&heart_x<=9)))||(heart_y>=2&&heart_y<=3&&(heart_x>=0&&heart_x<=10))||(heart_y==4&&(heart_x>=1&&heart_x<=9))||(heart_y==5&&(heart_x>=2&&heart_x<=8))||(heart_y==6&&(heart_x>=3&&heart_x<=7))||(heart_y==7&&(heart_x>=4&&heart_x<=6))||(heart_y==8&&(heart_x==5));if(draw_heart_pixel)o_pixel_color_data=(i_p2_hp>i)?C_HP_HEART_FULL:C_HP_HEART_EMPTY;end
+                    if(x_coord>=(P2_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING))&&x_coord<(P2_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING)+HEART_WIDTH)&&y_coord>=BP_HEARTS_Y_POS&&y_coord<BP_HEARTS_Y_POS+HEART_HEIGHT)begin heart_x=x_coord-(P2_HEARTS_START_X+i*(HEART_WIDTH+HEART_SPACING));heart_y=y_coord-BP_HEARTS_Y_POS;draw_heart_pixel=(heart_y==0&&(heart_x==2||heart_x==3||heart_x==7||heart_x==8))||(heart_y==1&&((heart_x>=1&&heart_x<=4)||(heart_x>=6&&heart_x<=9)))||(heart_y>=2&&heart_y<=3&&(heart_x>=0&&heart_x<=10))||(heart_y==4&&(heart_x>=1&&heart_x<=9))||(heart_y==5&&(heart_x>=2&&heart_x<=8))||(heart_y==6&&(heart_x>=3&&heart_x<=7))||(heart_y==7&&(heart_x>=4&&heart_x<=6))||(heart_y==8&&(heart_x==5));if(draw_heart_pixel)o_pixel_color_data=(i_p2_bp>i)?C_BP_HEART_FULL:C_BP_HEART_EMPTY;end
+                end
+                
+                // Zamanlayıcı (En son çizilerek en üstte olması sağlanır)
+                if (y_coord >= TIMER_Y_POS && y_coord < TIMER_Y_POS + FONT_CHAR_HEIGHT) begin
+                    if (x_coord >= TIMER_X_START && x_coord < TIMER_X_START + FONT_CHAR_WIDTH) begin
+                        char_row_to_draw = y_coord - TIMER_Y_POS; char_pixel_in_row = (x_coord - TIMER_X_START) % FONT_CHAR_WIDTH; char_code_to_draw = timer_tens + 8'h30;
+                        if (current_char_row_data[7 - char_pixel_in_row]) o_pixel_color_data = C_TIMER_TEXT_COLOR;
+                    end else if (x_coord >= TIMER_X_START + FONT_CHAR_WIDTH && x_coord < TIMER_X_START + 2*FONT_CHAR_WIDTH) begin
+                        char_row_to_draw = y_coord - TIMER_Y_POS; char_pixel_in_row = (x_coord - (TIMER_X_START + FONT_CHAR_WIDTH)) % FONT_CHAR_WIDTH; char_code_to_draw = timer_units + 8'h30;
+                        if (current_char_row_data[7 - char_pixel_in_row]) o_pixel_color_data = C_TIMER_TEXT_COLOR;
+                    end
+                end
+            end
+				
+            GAME_PHASE_GAMEOVER: begin
+                o_pixel_color_data = C_BLACK;
+                if (y_coord >= GAMEOVER_TEXT_START_Y && y_coord < GAMEOVER_TEXT_START_Y + FONT_CHAR_HEIGHT &&
+                    x_coord >= GAMEOVER_TEXT_START_X && x_coord < GAMEOVER_TEXT_START_X + (FONT_CHAR_WIDTH * GAMEOVER_TEXT_WIDTH_CHARS)) begin
+                    char_index = (x_coord - GAMEOVER_TEXT_START_X) / FONT_CHAR_WIDTH;
+                    char_row_to_draw = y_coord - GAMEOVER_TEXT_START_Y;
+                    char_pixel_in_row = (x_coord - GAMEOVER_TEXT_START_X) % FONT_CHAR_WIDTH;
+                    case (i_winner_info)
+                        2'b01: case(char_index)4'd0:char_code_to_draw=8'h50;4'd1:char_code_to_draw=8'h31;4'd2:char_code_to_draw=8'h20;4'd3:char_code_to_draw=8'h57;4'd4:char_code_to_draw=8'h49;4'd5:char_code_to_draw=8'h4E;4'd6:char_code_to_draw=8'h53;default:char_code_to_draw=8'h00;endcase
+                        2'b10: case(char_index)4'd0:char_code_to_draw=8'h50;4'd1:char_code_to_draw=8'h32;4'd2:char_code_to_draw=8'h20;4'd3:char_code_to_draw=8'h57;4'd4:char_code_to_draw=8'h49;4'd5:char_code_to_draw=8'h4E;4'd6:char_code_to_draw=8'h53;default:char_code_to_draw=8'h00;endcase
+                        2'b11: case(char_index)4'd0:char_code_to_draw=8'h44;4'd1:char_code_to_draw=8'h52;4'd2:char_code_to_draw=8'h41;4'd3:char_code_to_draw=8'h57;default:char_code_to_draw=8'h00;endcase
+                        default: char_code_to_draw = 8'h00; // Eğer kazanan belli değilse hiçbir şey yazma
+                    endcase
+                    if (current_char_row_data[7 - char_pixel_in_row]) o_pixel_color_data = C_GAMEOVER_TEXT_COLOR;
+                end
+            end
+            
+            default: o_pixel_color_data = C_BLACK;
+        endcase
+    end
+endmodule

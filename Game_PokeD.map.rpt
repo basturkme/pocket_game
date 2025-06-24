@@ -1,0 +1,1129 @@
+Analysis & Synthesis report for Game_PokeD
+Tue Jun 24 21:57:09 2025
+Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Analysis & Synthesis Summary
+  3. Analysis & Synthesis Settings
+  4. Parallel Compilation
+  5. Analysis & Synthesis Source Files Read
+  6. Analysis & Synthesis Resource Usage Summary
+  7. Analysis & Synthesis Resource Utilization by Entity
+  8. State Machine - |Game_PokeD|vga_driver:vga_driver_inst|v_state
+  9. State Machine - |Game_PokeD|vga_driver:vga_driver_inst|h_state
+ 10. State Machine - |Game_PokeD|player_fsm:p2fsm|current_state_reg
+ 11. State Machine - |Game_PokeD|player_fsm:p1fsm|current_state_reg
+ 12. User-Specified and Inferred Latches
+ 13. Registers Removed During Synthesis
+ 14. Removed Registers Triggering Further Register Optimizations
+ 15. General Register Statistics
+ 16. Inverted Register Statistics
+ 17. Multiplexer Restructuring Statistics (Restructuring Performed)
+ 18. Parameter Settings for User Entity Instance: clock_divider_functional:clk25
+ 19. Parameter Settings for User Entity Instance: clock_divider_functional:clk60
+ 20. Parameter Settings for User Entity Instance: cpu_bot:cpubot|LFSR_16:lfsr_unit|shift_register:my_shift_register
+ 21. Parameter Settings for User Entity Instance: vga_driver:vga_driver_inst
+ 22. Parameter Settings for Inferred Entity Instance: lpm_divide:Mod1
+ 23. Parameter Settings for Inferred Entity Instance: lpm_divide:Div0
+ 24. Parameter Settings for Inferred Entity Instance: lpm_divide:Mod0
+ 25. Parameter Settings for Inferred Entity Instance: vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0
+ 26. Parameter Settings for Inferred Entity Instance: vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0
+ 27. Port Connectivity Checks: "hexto7seg:h5"
+ 28. Port Connectivity Checks: "vga_graphics_connector:graphics_conn_inst|ui_rom:font_rom_instance"
+ 29. Port Connectivity Checks: "player_fsm:p2fsm"
+ 30. Port Connectivity Checks: "player_fsm:p1fsm"
+ 31. Port Connectivity Checks: "cpu_bot:cpubot|LFSR_16:lfsr_unit|shift_register:my_shift_register"
+ 32. Port Connectivity Checks: "cpu_bot:cpubot|LFSR_16:lfsr_unit"
+ 33. Post-Synthesis Netlist Statistics for Top Partition
+ 34. Elapsed Time Per Partition
+ 35. Analysis & Synthesis Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2024  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+
+
+
++----------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                     ;
++---------------------------------+------------------------------------------------+
+; Analysis & Synthesis Status     ; Successful - Tue Jun 24 21:57:09 2025          ;
+; Quartus Prime Version           ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
+; Revision Name                   ; Game_PokeD                                     ;
+; Top-level Entity Name           ; Game_PokeD                                     ;
+; Family                          ; Cyclone V                                      ;
+; Logic utilization (in ALMs)     ; N/A                                            ;
+; Total registers                 ; 240                                            ;
+; Total pins                      ; 132                                            ;
+; Total virtual pins              ; 0                                              ;
+; Total block memory bits         ; 0                                              ;
+; Total DSP Blocks                ; 0                                              ;
+; Total HSSI RX PCSs              ; 0                                              ;
+; Total HSSI PMA RX Deserializers ; 0                                              ;
+; Total HSSI TX PCSs              ; 0                                              ;
+; Total HSSI PMA TX Serializers   ; 0                                              ;
+; Total PLLs                      ; 0                                              ;
+; Total DLLs                      ; 0                                              ;
++---------------------------------+------------------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Settings                                                                                             ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+; Option                                                                          ; Setting            ; Default Value      ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+; Device                                                                          ; 5CSEMA5F31C6       ;                    ;
+; Top-level entity name                                                           ; Game_PokeD         ; Game_PokeD         ;
+; Family name                                                                     ; Cyclone V          ; Cyclone V          ;
+; Use smart compilation                                                           ; Off                ; Off                ;
+; Enable parallel Assembler and Timing Analyzer during compilation                ; On                 ; On                 ;
+; Enable compact report table                                                     ; Off                ; Off                ;
+; Restructure Multiplexers                                                        ; Auto               ; Auto               ;
+; MLAB Add Timing Constraints For Mixed-Port Feed-Through Mode Setting Don't Care ; Off                ; Off                ;
+; Create Debugging Nodes for IP Cores                                             ; Off                ; Off                ;
+; Preserve fewer node names                                                       ; On                 ; On                 ;
+; Intel FPGA IP Evaluation Mode                                                   ; Enable             ; Enable             ;
+; Verilog Version                                                                 ; Verilog_2001       ; Verilog_2001       ;
+; VHDL Version                                                                    ; VHDL_1993          ; VHDL_1993          ;
+; State Machine Processing                                                        ; Auto               ; Auto               ;
+; Safe State Machine                                                              ; Off                ; Off                ;
+; Extract Verilog State Machines                                                  ; On                 ; On                 ;
+; Extract VHDL State Machines                                                     ; On                 ; On                 ;
+; Ignore Verilog initial constructs                                               ; Off                ; Off                ;
+; Iteration limit for constant Verilog loops                                      ; 5000               ; 5000               ;
+; Iteration limit for non-constant Verilog loops                                  ; 250                ; 250                ;
+; Add Pass-Through Logic to Inferred RAMs                                         ; On                 ; On                 ;
+; Infer RAMs from Raw Logic                                                       ; On                 ; On                 ;
+; Parallel Synthesis                                                              ; On                 ; On                 ;
+; DSP Block Balancing                                                             ; Auto               ; Auto               ;
+; NOT Gate Push-Back                                                              ; On                 ; On                 ;
+; Power-Up Don't Care                                                             ; On                 ; On                 ;
+; Remove Redundant Logic Cells                                                    ; Off                ; Off                ;
+; Remove Duplicate Registers                                                      ; On                 ; On                 ;
+; Ignore CARRY Buffers                                                            ; Off                ; Off                ;
+; Ignore CASCADE Buffers                                                          ; Off                ; Off                ;
+; Ignore GLOBAL Buffers                                                           ; Off                ; Off                ;
+; Ignore ROW GLOBAL Buffers                                                       ; Off                ; Off                ;
+; Ignore LCELL Buffers                                                            ; Off                ; Off                ;
+; Ignore SOFT Buffers                                                             ; On                 ; On                 ;
+; Limit AHDL Integers to 32 Bits                                                  ; Off                ; Off                ;
+; Optimization Technique                                                          ; Balanced           ; Balanced           ;
+; Carry Chain Length                                                              ; 70                 ; 70                 ;
+; Auto Carry Chains                                                               ; On                 ; On                 ;
+; Auto Open-Drain Pins                                                            ; On                 ; On                 ;
+; Perform WYSIWYG Primitive Resynthesis                                           ; Off                ; Off                ;
+; Auto ROM Replacement                                                            ; On                 ; On                 ;
+; Auto RAM Replacement                                                            ; On                 ; On                 ;
+; Auto DSP Block Replacement                                                      ; On                 ; On                 ;
+; Auto Shift Register Replacement                                                 ; Auto               ; Auto               ;
+; Allow Shift Register Merging across Hierarchies                                 ; Auto               ; Auto               ;
+; Auto Clock Enable Replacement                                                   ; On                 ; On                 ;
+; Strict RAM Replacement                                                          ; Off                ; Off                ;
+; Allow Synchronous Control Signals                                               ; On                 ; On                 ;
+; Force Use of Synchronous Clear Signals                                          ; Off                ; Off                ;
+; Auto Resource Sharing                                                           ; Off                ; Off                ;
+; Allow Any RAM Size For Recognition                                              ; Off                ; Off                ;
+; Allow Any ROM Size For Recognition                                              ; Off                ; Off                ;
+; Allow Any Shift Register Size For Recognition                                   ; Off                ; Off                ;
+; Use LogicLock Constraints during Resource Balancing                             ; On                 ; On                 ;
+; Ignore translate_off and synthesis_off directives                               ; Off                ; Off                ;
+; Timing-Driven Synthesis                                                         ; On                 ; On                 ;
+; Report Parameter Settings                                                       ; On                 ; On                 ;
+; Report Source Assignments                                                       ; On                 ; On                 ;
+; Report Connectivity Checks                                                      ; On                 ; On                 ;
+; Ignore Maximum Fan-Out Assignments                                              ; Off                ; Off                ;
+; Synchronization Register Chain Length                                           ; 3                  ; 3                  ;
+; Power Optimization During Synthesis                                             ; Normal compilation ; Normal compilation ;
+; HDL message level                                                               ; Level2             ; Level2             ;
+; Suppress Register Optimization Related Messages                                 ; Off                ; Off                ;
+; Number of Removed Registers Reported in Synthesis Report                        ; 5000               ; 5000               ;
+; Number of Swept Nodes Reported in Synthesis Report                              ; 5000               ; 5000               ;
+; Number of Inverted Registers Reported in Synthesis Report                       ; 100                ; 100                ;
+; Clock MUX Protection                                                            ; On                 ; On                 ;
+; Auto Gated Clock Conversion                                                     ; Off                ; Off                ;
+; Block Design Naming                                                             ; Auto               ; Auto               ;
+; SDC constraint protection                                                       ; Off                ; Off                ;
+; Synthesis Effort                                                                ; Auto               ; Auto               ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal                    ; On                 ; On                 ;
+; Pre-Mapping Resynthesis Optimization                                            ; Off                ; Off                ;
+; Analysis & Synthesis Message Level                                              ; Medium             ; Medium             ;
+; Disable Register Merging Across Hierarchies                                     ; Auto               ; Auto               ;
+; Resource Aware Inference For Block RAM                                          ; On                 ; On                 ;
+; Automatic Parallel Synthesis                                                    ; On                 ; On                 ;
+; Partial Reconfiguration Bitstream ID                                            ; Off                ; Off                ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 12          ;
+; Maximum allowed            ; 12          ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 12          ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
+;     Processor 2            ;   0.0%      ;
+;     Processor 3            ;   0.0%      ;
+;     Processor 4            ;   0.0%      ;
+;     Processor 5            ;   0.0%      ;
+;     Processor 6            ;   0.0%      ;
+;     Processor 7            ;   0.0%      ;
+;     Processor 8            ;   0.0%      ;
+;     Processors 9-12        ;   0.0%      ;
++----------------------------+-------------+
+
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                      ;
++----------------------------------+-----------------+------------------------------+-------------------------------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                  ; Library ;
++----------------------------------+-----------------+------------------------------+-------------------------------------------------------------------------------+---------+
+; clock_divider_functional.v       ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/clock_divider_functional.v              ;         ;
+; cpu_bot.v                        ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/cpu_bot.v                               ;         ;
+; game_logic_fsm.v                 ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v                        ;         ;
+; Game_PokeD.v                     ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v                            ;         ;
+; hexto7seg.v                      ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/hexto7seg.v                             ;         ;
+; LFSR_16.v                        ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/LFSR_16.v                               ;         ;
+; player_fsm.v                     ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/player_fsm.v                            ;         ;
+; shift_register.v                 ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/shift_register.v                        ;         ;
+; ui_rom.v                         ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/ui_rom.v                                ;         ;
+; vga_driver.v                     ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/vga_driver.v                            ;         ;
+; vga_graphics_connector.v         ; yes             ; User Verilog HDL File        ; D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v                ;         ;
+; lpm_divide.tdf                   ; yes             ; Megafunction                 ; d:/intelfpga_lite/23.1std/quartus/libraries/megafunctions/lpm_divide.tdf      ;         ;
+; abs_divider.inc                  ; yes             ; Megafunction                 ; d:/intelfpga_lite/23.1std/quartus/libraries/megafunctions/abs_divider.inc     ;         ;
+; sign_div_unsign.inc              ; yes             ; Megafunction                 ; d:/intelfpga_lite/23.1std/quartus/libraries/megafunctions/sign_div_unsign.inc ;         ;
+; aglobal231.inc                   ; yes             ; Megafunction                 ; d:/intelfpga_lite/23.1std/quartus/libraries/megafunctions/aglobal231.inc      ;         ;
+; db/lpm_divide_1go.tdf            ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_1go.tdf                   ;         ;
+; db/abs_divider_7ag.tdf           ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/abs_divider_7ag.tdf                  ;         ;
+; db/alt_u_div_use.tdf             ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/alt_u_div_use.tdf                    ;         ;
+; db/lpm_abs_kn9.tdf               ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/lpm_abs_kn9.tdf                      ;         ;
+; db/lpm_abs_nn9.tdf               ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/lpm_abs_nn9.tdf                      ;         ;
+; db/lpm_divide_uno.tdf            ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_uno.tdf                   ;         ;
+; db/lpm_divide_72m.tdf            ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_72m.tdf                   ;         ;
+; db/sign_div_unsign_akh.tdf       ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/sign_div_unsign_akh.tdf              ;         ;
+; db/alt_u_div_qse.tdf             ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/alt_u_div_qse.tdf                    ;         ;
+; db/lpm_divide_4am.tdf            ; yes             ; Auto-Generated Megafunction  ; D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_4am.tdf                   ;         ;
++----------------------------------+-----------------+------------------------------+-------------------------------------------------------------------------------+---------+
+
+
++------------------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary                      ;
++---------------------------------------------+--------------------+
+; Resource                                    ; Usage              ;
++---------------------------------------------+--------------------+
+; Estimate of Logic utilization (ALMs needed) ; 1099               ;
+;                                             ;                    ;
+; Combinational ALUT usage for logic          ; 1707               ;
+;     -- 7 input functions                    ; 16                 ;
+;     -- 6 input functions                    ; 474                ;
+;     -- 5 input functions                    ; 231                ;
+;     -- 4 input functions                    ; 238                ;
+;     -- <=3 input functions                  ; 748                ;
+;                                             ;                    ;
+; Dedicated logic registers                   ; 240                ;
+;                                             ;                    ;
+; I/O pins                                    ; 132                ;
+;                                             ;                    ;
+; Total DSP Blocks                            ; 0                  ;
+;                                             ;                    ;
+; Maximum fan-out node                        ; sys_master_reset~0 ;
+; Maximum fan-out                             ; 156                ;
+; Total fan-out                               ; 7929               ;
+; Average fan-out                             ; 3.53               ;
++---------------------------------------------+--------------------+
+
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                                                                                                                       ;
++------------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
+; Compilation Hierarchy Node                     ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                                                                   ; Entity Name              ; Library Name ;
++------------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
+; |Game_PokeD                                    ; 1707 (170)          ; 240 (30)                  ; 0                 ; 0          ; 132  ; 0            ; |Game_PokeD                                                                                                                                           ; Game_PokeD               ; work         ;
+;    |clock_divider_functional:clk25|            ; 1 (1)               ; 1 (1)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|clock_divider_functional:clk25                                                                                                            ; clock_divider_functional ; work         ;
+;    |clock_divider_functional:clk60|            ; 24 (24)             ; 20 (20)                   ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|clock_divider_functional:clk60                                                                                                            ; clock_divider_functional ; work         ;
+;    |cpu_bot:cpubot|                            ; 42 (25)             ; 25 (9)                    ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|cpu_bot:cpubot                                                                                                                            ; cpu_bot                  ; work         ;
+;       |LFSR_16:lfsr_unit|                      ; 17 (0)              ; 16 (0)                    ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|cpu_bot:cpubot|LFSR_16:lfsr_unit                                                                                                          ; LFSR_16                  ; work         ;
+;          |shift_register:my_shift_register|    ; 17 (17)             ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|cpu_bot:cpubot|LFSR_16:lfsr_unit|shift_register:my_shift_register                                                                         ; shift_register           ; work         ;
+;    |game_logic_fsm:game_logic_inst|            ; 119 (119)           ; 59 (59)                   ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|game_logic_fsm:game_logic_inst                                                                                                            ; game_logic_fsm           ; work         ;
+;    |hexto7seg:h0|                              ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|hexto7seg:h0                                                                                                                              ; hexto7seg                ; work         ;
+;    |hexto7seg:h1|                              ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|hexto7seg:h1                                                                                                                              ; hexto7seg                ; work         ;
+;    |hexto7seg:h2|                              ; 1 (1)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|hexto7seg:h2                                                                                                                              ; hexto7seg                ; work         ;
+;    |hexto7seg:h3|                              ; 1 (1)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|hexto7seg:h3                                                                                                                              ; hexto7seg                ; work         ;
+;    |hexto7seg:h4|                              ; 3 (3)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|hexto7seg:h4                                                                                                                              ; hexto7seg                ; work         ;
+;    |hexto7seg:h5|                              ; 1 (1)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|hexto7seg:h5                                                                                                                              ; hexto7seg                ; work         ;
+;    |lpm_divide:Div0|                           ; 54 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Div0                                                                                                                           ; lpm_divide               ; work         ;
+;       |lpm_divide_uno:auto_generated|          ; 54 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Div0|lpm_divide_uno:auto_generated                                                                                             ; lpm_divide_uno           ; work         ;
+;          |abs_divider_7ag:divider|             ; 54 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Div0|lpm_divide_uno:auto_generated|abs_divider_7ag:divider                                                                     ; abs_divider_7ag          ; work         ;
+;             |alt_u_div_use:divider|            ; 54 (54)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Div0|lpm_divide_uno:auto_generated|abs_divider_7ag:divider|alt_u_div_use:divider                                               ; alt_u_div_use            ; work         ;
+;    |lpm_divide:Mod0|                           ; 39 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod0                                                                                                                           ; lpm_divide               ; work         ;
+;       |lpm_divide_1go:auto_generated|          ; 39 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod0|lpm_divide_1go:auto_generated                                                                                             ; lpm_divide_1go           ; work         ;
+;          |abs_divider_7ag:divider|             ; 39 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod0|lpm_divide_1go:auto_generated|abs_divider_7ag:divider                                                                     ; abs_divider_7ag          ; work         ;
+;             |alt_u_div_use:divider|            ; 39 (39)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod0|lpm_divide_1go:auto_generated|abs_divider_7ag:divider|alt_u_div_use:divider                                               ; alt_u_div_use            ; work         ;
+;    |lpm_divide:Mod1|                           ; 54 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod1                                                                                                                           ; lpm_divide               ; work         ;
+;       |lpm_divide_1go:auto_generated|          ; 54 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod1|lpm_divide_1go:auto_generated                                                                                             ; lpm_divide_1go           ; work         ;
+;          |abs_divider_7ag:divider|             ; 54 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod1|lpm_divide_1go:auto_generated|abs_divider_7ag:divider                                                                     ; abs_divider_7ag          ; work         ;
+;             |alt_u_div_use:divider|            ; 54 (54)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|lpm_divide:Mod1|lpm_divide_1go:auto_generated|abs_divider_7ag:divider|alt_u_div_use:divider                                               ; alt_u_div_use            ; work         ;
+;    |player_fsm:p1fsm|                          ; 217 (217)           ; 33 (33)                   ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|player_fsm:p1fsm                                                                                                                          ; player_fsm               ; work         ;
+;    |player_fsm:p2fsm|                          ; 228 (228)           ; 33 (33)                   ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|player_fsm:p2fsm                                                                                                                          ; player_fsm               ; work         ;
+;    |vga_driver:vga_driver_inst|                ; 66 (66)             ; 39 (39)                   ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_driver:vga_driver_inst                                                                                                                ; vga_driver               ; work         ;
+;    |vga_graphics_connector:graphics_conn_inst| ; 673 (519)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst                                                                                                 ; vga_graphics_connector   ; work         ;
+;       |lpm_divide:Div0|                        ; 35 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0                                                                                 ; lpm_divide               ; work         ;
+;          |lpm_divide_4am:auto_generated|       ; 35 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0|lpm_divide_4am:auto_generated                                                   ; lpm_divide_4am           ; work         ;
+;             |sign_div_unsign_akh:divider|      ; 35 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0|lpm_divide_4am:auto_generated|sign_div_unsign_akh:divider                       ; sign_div_unsign_akh      ; work         ;
+;                |alt_u_div_qse:divider|         ; 35 (35)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0|lpm_divide_4am:auto_generated|sign_div_unsign_akh:divider|alt_u_div_qse:divider ; alt_u_div_qse            ; work         ;
+;       |lpm_divide:Mod0|                        ; 35 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0                                                                                 ; lpm_divide               ; work         ;
+;          |lpm_divide_72m:auto_generated|       ; 35 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0|lpm_divide_72m:auto_generated                                                   ; lpm_divide_72m           ; work         ;
+;             |sign_div_unsign_akh:divider|      ; 35 (0)              ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0|lpm_divide_72m:auto_generated|sign_div_unsign_akh:divider                       ; sign_div_unsign_akh      ; work         ;
+;                |alt_u_div_qse:divider|         ; 35 (35)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0|lpm_divide_72m:auto_generated|sign_div_unsign_akh:divider|alt_u_div_qse:divider ; alt_u_div_qse            ; work         ;
+;       |ui_rom:font_rom_instance|               ; 84 (84)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|ui_rom:font_rom_instance                                                                        ; ui_rom                   ; work         ;
++------------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
+Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
+
+
+Encoding Type:  One-Hot
++------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |Game_PokeD|vga_driver:vga_driver_inst|v_state                                                         ;
++------------------------+----------------------+-----------------------+-----------------------+------------------------+
+; Name                   ; v_state.V_BACK_STATE ; v_state.V_PULSE_STATE ; v_state.V_FRONT_STATE ; v_state.V_ACTIVE_STATE ;
++------------------------+----------------------+-----------------------+-----------------------+------------------------+
+; v_state.V_ACTIVE_STATE ; 0                    ; 0                     ; 0                     ; 0                      ;
+; v_state.V_FRONT_STATE  ; 0                    ; 0                     ; 1                     ; 1                      ;
+; v_state.V_PULSE_STATE  ; 0                    ; 1                     ; 0                     ; 1                      ;
+; v_state.V_BACK_STATE   ; 1                    ; 0                     ; 0                     ; 1                      ;
++------------------------+----------------------+-----------------------+-----------------------+------------------------+
+
+
+Encoding Type:  One-Hot
++------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |Game_PokeD|vga_driver:vga_driver_inst|h_state                                                         ;
++------------------------+----------------------+-----------------------+-----------------------+------------------------+
+; Name                   ; h_state.H_BACK_STATE ; h_state.H_PULSE_STATE ; h_state.H_FRONT_STATE ; h_state.H_ACTIVE_STATE ;
++------------------------+----------------------+-----------------------+-----------------------+------------------------+
+; h_state.H_ACTIVE_STATE ; 0                    ; 0                     ; 0                     ; 0                      ;
+; h_state.H_FRONT_STATE  ; 0                    ; 0                     ; 1                     ; 1                      ;
+; h_state.H_PULSE_STATE  ; 0                    ; 1                     ; 0                     ; 1                      ;
+; h_state.H_BACK_STATE   ; 1                    ; 0                     ; 0                     ; 1                      ;
++------------------------+----------------------+-----------------------+-----------------------+------------------------+
+
+
+Encoding Type:  One-Hot
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |Game_PokeD|player_fsm:p2fsm|current_state_reg                                                                                                                                                                                                                                                                                                                                                                                                                                      ;
++---------------------------------------+-----------------------------------+---------------------------------------+-------------------------------+-----------------------------+------------------------------------+----------------------------------+-----------------------------------+------------------------------------+----------------------------------+-----------------------------------+-------------------------------+--------------------------------+--------------------------+
+; Name                                  ; current_state_reg.S_BLOCKING_IDLE ; current_state_reg.S_PRE_ATTACK_CHARGE ; current_state_reg.S_BLOCKSTUN ; current_state_reg.S_HITSTUN ; current_state_reg.S_M_ATK_RECOVERY ; current_state_reg.S_M_ATK_ACTIVE ; current_state_reg.S_M_ATK_STARTUP ; current_state_reg.S_N_ATK_RECOVERY ; current_state_reg.S_N_ATK_ACTIVE ; current_state_reg.S_N_ATK_STARTUP ; current_state_reg.S_MOVE_LEFT ; current_state_reg.S_MOVE_RIGHT ; current_state_reg.S_IDLE ;
++---------------------------------------+-----------------------------------+---------------------------------------+-------------------------------+-----------------------------+------------------------------------+----------------------------------+-----------------------------------+------------------------------------+----------------------------------+-----------------------------------+-------------------------------+--------------------------------+--------------------------+
+; current_state_reg.S_IDLE              ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 0                        ;
+; current_state_reg.S_MOVE_RIGHT        ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 1                              ; 1                        ;
+; current_state_reg.S_MOVE_LEFT         ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 1                             ; 0                              ; 1                        ;
+; current_state_reg.S_N_ATK_STARTUP     ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 1                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_N_ATK_ACTIVE      ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 1                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_N_ATK_RECOVERY    ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 1                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_M_ATK_STARTUP     ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 1                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_M_ATK_ACTIVE      ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 1                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_M_ATK_RECOVERY    ; 0                                 ; 0                                     ; 0                             ; 0                           ; 1                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_HITSTUN           ; 0                                 ; 0                                     ; 0                             ; 1                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_BLOCKSTUN         ; 0                                 ; 0                                     ; 1                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_PRE_ATTACK_CHARGE ; 0                                 ; 1                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_BLOCKING_IDLE     ; 1                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
++---------------------------------------+-----------------------------------+---------------------------------------+-------------------------------+-----------------------------+------------------------------------+----------------------------------+-----------------------------------+------------------------------------+----------------------------------+-----------------------------------+-------------------------------+--------------------------------+--------------------------+
+
+
+Encoding Type:  One-Hot
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |Game_PokeD|player_fsm:p1fsm|current_state_reg                                                                                                                                                                                                                                                                                                                                                                                                                                      ;
++---------------------------------------+-----------------------------------+---------------------------------------+-------------------------------+-----------------------------+------------------------------------+----------------------------------+-----------------------------------+------------------------------------+----------------------------------+-----------------------------------+-------------------------------+--------------------------------+--------------------------+
+; Name                                  ; current_state_reg.S_BLOCKING_IDLE ; current_state_reg.S_PRE_ATTACK_CHARGE ; current_state_reg.S_BLOCKSTUN ; current_state_reg.S_HITSTUN ; current_state_reg.S_M_ATK_RECOVERY ; current_state_reg.S_M_ATK_ACTIVE ; current_state_reg.S_M_ATK_STARTUP ; current_state_reg.S_N_ATK_RECOVERY ; current_state_reg.S_N_ATK_ACTIVE ; current_state_reg.S_N_ATK_STARTUP ; current_state_reg.S_MOVE_LEFT ; current_state_reg.S_MOVE_RIGHT ; current_state_reg.S_IDLE ;
++---------------------------------------+-----------------------------------+---------------------------------------+-------------------------------+-----------------------------+------------------------------------+----------------------------------+-----------------------------------+------------------------------------+----------------------------------+-----------------------------------+-------------------------------+--------------------------------+--------------------------+
+; current_state_reg.S_IDLE              ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 0                        ;
+; current_state_reg.S_MOVE_RIGHT        ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 1                              ; 1                        ;
+; current_state_reg.S_MOVE_LEFT         ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 1                             ; 0                              ; 1                        ;
+; current_state_reg.S_N_ATK_STARTUP     ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 1                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_N_ATK_ACTIVE      ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 1                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_N_ATK_RECOVERY    ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 1                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_M_ATK_STARTUP     ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 1                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_M_ATK_ACTIVE      ; 0                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 1                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_M_ATK_RECOVERY    ; 0                                 ; 0                                     ; 0                             ; 0                           ; 1                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_HITSTUN           ; 0                                 ; 0                                     ; 0                             ; 1                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_BLOCKSTUN         ; 0                                 ; 0                                     ; 1                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_PRE_ATTACK_CHARGE ; 0                                 ; 1                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
+; current_state_reg.S_BLOCKING_IDLE     ; 1                                 ; 0                                     ; 0                             ; 0                           ; 0                                  ; 0                                ; 0                                 ; 0                                  ; 0                                ; 0                                 ; 0                             ; 0                              ; 1                        ;
++---------------------------------------+-----------------------------------+---------------------------------------+-------------------------------+-----------------------------+------------------------------------+----------------------------------+-----------------------------------+------------------------------------+----------------------------------+-----------------------------------+-------------------------------+--------------------------------+--------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------------------------------+
+; User-Specified and Inferred Latches                                                                                                      ;
++---------------------------------------------------------------+-------------------------------------------------+------------------------+
+; Latch Name                                                    ; Latch Enable Signal                             ; Free of Timing Hazards ;
++---------------------------------------------------------------+-------------------------------------------------+------------------------+
+; vga_graphics_connector:graphics_conn_inst|char_row_to_draw[0] ; vga_graphics_connector:graphics_conn_inst|Mux27 ; yes                    ;
+; vga_graphics_connector:graphics_conn_inst|char_row_to_draw[1] ; vga_graphics_connector:graphics_conn_inst|Mux27 ; yes                    ;
+; vga_graphics_connector:graphics_conn_inst|char_row_to_draw[2] ; vga_graphics_connector:graphics_conn_inst|Mux27 ; yes                    ;
+; Number of user-specified and inferred latches = 3             ;                                                 ;                        ;
++---------------------------------------------------------------+-------------------------------------------------+------------------------+
+Note: All latches listed above may not be present at the end of synthesis due to various synthesis optimizations.
+
+
++------------------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                             ;
++-------------------------------------------------------+----------------------------------------+
+; Register name                                         ; Reason for Removal                     ;
++-------------------------------------------------------+----------------------------------------+
+; vga_driver:vga_driver_inst|red_reg[0]                 ; Stuck at GND due to stuck port data_in ;
+; vga_driver:vga_driver_inst|green_reg[0..4]            ; Stuck at GND due to stuck port data_in ;
+; vga_driver:vga_driver_inst|blue_reg[0..5]             ; Stuck at GND due to stuck port data_in ;
+; vga_driver:vga_driver_inst|red_reg[1..4]              ; Stuck at GND due to stuck port data_in ;
+; clock_divider_functional:clk25|count[0]               ; Stuck at GND due to stuck port data_in ;
+; vga_driver:vga_driver_inst|v_state~5                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|v_state~6                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|v_state~7                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|v_state~8                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|v_state~9                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|v_state~10                 ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|v_state~11                 ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|v_state~12                 ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~5                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~6                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~7                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~8                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~9                  ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~10                 ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~11                 ; Lost fanout                            ;
+; vga_driver:vga_driver_inst|h_state~12                 ; Lost fanout                            ;
+; player_fsm:p2fsm|current_state_reg~4                  ; Lost fanout                            ;
+; player_fsm:p2fsm|current_state_reg~5                  ; Lost fanout                            ;
+; player_fsm:p2fsm|current_state_reg~6                  ; Lost fanout                            ;
+; player_fsm:p2fsm|current_state_reg~7                  ; Lost fanout                            ;
+; player_fsm:p1fsm|current_state_reg~4                  ; Lost fanout                            ;
+; player_fsm:p1fsm|current_state_reg~5                  ; Lost fanout                            ;
+; player_fsm:p1fsm|current_state_reg~6                  ; Lost fanout                            ;
+; player_fsm:p1fsm|current_state_reg~7                  ; Lost fanout                            ;
+; game_logic_fsm:game_logic_inst|countdown_value_out[2] ; Stuck at GND due to stuck port data_in ;
+; Total Number of Removed Registers = 42                ;                                        ;
++-------------------------------------------------------+----------------------------------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                                        ;
++-----------------------------------------+---------------------------+------------------------------------------------------------------------------+
+; Register name                           ; Reason for Removal        ; Registers Removed due to This Register                                       ;
++-----------------------------------------+---------------------------+------------------------------------------------------------------------------+
+; vga_driver:vga_driver_inst|red_reg[0]   ; Stuck at GND              ; vga_driver:vga_driver_inst|red_reg[2], vga_driver:vga_driver_inst|red_reg[4] ;
+;                                         ; due to stuck port data_in ;                                                                              ;
+; vga_driver:vga_driver_inst|green_reg[4] ; Stuck at GND              ; vga_driver:vga_driver_inst|blue_reg[3]                                       ;
+;                                         ; due to stuck port data_in ;                                                                              ;
+; vga_driver:vga_driver_inst|green_reg[3] ; Stuck at GND              ; vga_driver:vga_driver_inst|blue_reg[4]                                       ;
+;                                         ; due to stuck port data_in ;                                                                              ;
+; vga_driver:vga_driver_inst|green_reg[2] ; Stuck at GND              ; vga_driver:vga_driver_inst|blue_reg[5]                                       ;
+;                                         ; due to stuck port data_in ;                                                                              ;
+; vga_driver:vga_driver_inst|red_reg[1]   ; Stuck at GND              ; vga_driver:vga_driver_inst|red_reg[3]                                        ;
+;                                         ; due to stuck port data_in ;                                                                              ;
++-----------------------------------------+---------------------------+------------------------------------------------------------------------------+
+
+
++------------------------------------------------------+
+; General Register Statistics                          ;
++----------------------------------------------+-------+
+; Statistic                                    ; Value ;
++----------------------------------------------+-------+
+; Total registers                              ; 240   ;
+; Number of registers using Synchronous Clear  ; 104   ;
+; Number of registers using Synchronous Load   ; 8     ;
+; Number of registers using Asynchronous Clear ; 181   ;
+; Number of registers using Asynchronous Load  ; 0     ;
+; Number of registers using Clock Enable       ; 124   ;
+; Number of registers using Preset             ; 0     ;
++----------------------------------------------+-------+
+
+
++-----------------------------------------------------------------+
+; Inverted Register Statistics                                    ;
++-------------------------------------------------------+---------+
+; Inverted Register                                     ; Fan out ;
++-------------------------------------------------------+---------+
+; game_logic_fsm:game_logic_inst|p2_hp_out[1]           ; 8       ;
+; game_logic_fsm:game_logic_inst|p2_hp_out[0]           ; 5       ;
+; game_logic_fsm:game_logic_inst|p1_hp_out[1]           ; 8       ;
+; game_logic_fsm:game_logic_inst|p1_hp_out[0]           ; 6       ;
+; game_logic_fsm:game_logic_inst|p2_bp_out[1]           ; 9       ;
+; game_logic_fsm:game_logic_inst|p2_bp_out[0]           ; 7       ;
+; game_logic_fsm:game_logic_inst|p1_bp_out[1]           ; 8       ;
+; game_logic_fsm:game_logic_inst|p1_bp_out[0]           ; 8       ;
+; game_logic_fsm:game_logic_inst|countdown_value_out[1] ; 8       ;
+; game_logic_fsm:game_logic_inst|countdown_value_out[0] ; 8       ;
+; player_fsm:p2fsm|x_pos_player[8]                      ; 19      ;
+; player_fsm:p2fsm|x_pos_player[7]                      ; 20      ;
+; player_fsm:p2fsm|x_pos_player[6]                      ; 20      ;
+; player_fsm:p2fsm|x_pos_player[5]                      ; 22      ;
+; player_fsm:p2fsm|x_pos_player[4]                      ; 21      ;
+; player_fsm:p2fsm|x_pos_player[2]                      ; 17      ;
+; player_fsm:p1fsm|x_pos_player[5]                      ; 21      ;
+; player_fsm:p1fsm|x_pos_player[2]                      ; 16      ;
+; player_fsm:p1fsm|x_pos_player[6]                      ; 20      ;
+; key0_sync_s2_prev_for_tick                            ; 1       ;
+; key0_sync_s2_for_tick                                 ; 2       ;
+; game_logic_fsm:game_logic_inst|o_software_reset       ; 1       ;
+; key0_sync_s1_for_tick                                 ; 1       ;
+; key0_on_clk50_s2                                      ; 1       ;
+; cpu_bot:cpubot|load_lfsr_on_reset                     ; 17      ;
+; key0_on_clk50_s1                                      ; 1       ;
+; Total number of inverted registers = 26               ;         ;
++-------------------------------------------------------+---------+
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                                                          ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                                                ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------------------------+
+; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; Yes        ; |Game_PokeD|player_fsm:p1fsm|x_pos_player[7]                                              ;
+; 3:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |Game_PokeD|cpu_bot:cpubot|action_timer_reg[0]                                            ;
+; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; Yes        ; |Game_PokeD|player_fsm:p2fsm|attack_frame_counter_reg[0]                                  ;
+; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; Yes        ; |Game_PokeD|player_fsm:p2fsm|stun_timer_reg[1]                                            ;
+; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; Yes        ; |Game_PokeD|player_fsm:p1fsm|attack_frame_counter_reg[4]                                  ;
+; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; Yes        ; |Game_PokeD|player_fsm:p1fsm|stun_timer_reg[3]                                            ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Game_PokeD|cpu_bot:cpubot|LFSR_16:lfsr_unit|shift_register:my_shift_register|data_out[4] ;
+; 6:1                ; 7 bits    ; 28 LEs        ; 7 LEs                ; 21 LEs                 ; Yes        ; |Game_PokeD|game_logic_fsm:game_logic_inst|game_seconds_elapsed_out[1]                    ;
+; 10:1               ; 10 bits   ; 60 LEs        ; 0 LEs                ; 60 LEs                 ; Yes        ; |Game_PokeD|vga_driver:vga_driver_inst|v_counter[9]                                       ;
+; 10:1               ; 10 bits   ; 60 LEs        ; 0 LEs                ; 60 LEs                 ; Yes        ; |Game_PokeD|vga_driver:vga_driver_inst|h_counter[6]                                       ;
+; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; Yes        ; |Game_PokeD|player_fsm:p2fsm|x_pos_player[6]                                              ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 2 LEs                ; 6 LEs                  ; Yes        ; |Game_PokeD|game_logic_fsm:game_logic_inst|p2_hp_out[0]                                   ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 2 LEs                ; 6 LEs                  ; Yes        ; |Game_PokeD|game_logic_fsm:game_logic_inst|p1_hp_out[0]                                   ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 2 LEs                ; 6 LEs                  ; Yes        ; |Game_PokeD|game_logic_fsm:game_logic_inst|countdown_value_out[0]                         ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 2 LEs                ; 6 LEs                  ; Yes        ; |Game_PokeD|game_logic_fsm:game_logic_inst|p2_bp_out[0]                                   ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 2 LEs                ; 6 LEs                  ; Yes        ; |Game_PokeD|game_logic_fsm:game_logic_inst|p1_bp_out[0]                                   ;
+; 1:1                ; 2 bits    ; 0 LEs         ; 0 LEs                ; 0 LEs                  ; No         ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|Add2                                ;
+; 3:1                ; 6 bits    ; 12 LEs        ; 12 LEs               ; 0 LEs                  ; No         ; |Game_PokeD|LEDR                                                                          ;
+; 3:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |Game_PokeD|p1_hitbox_x2_calc[7]                                                          ;
+; 3:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |Game_PokeD|p2_hitbox_x2_calc[0]                                                          ;
+; 3:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |Game_PokeD|p2_hitbox_x1_calc[8]                                                          ;
+; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|Mux11                               ;
+; 3:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|o_pixel_color_data                  ;
+; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Game_PokeD|hexto7seg:h3|Decoder0                                                         ;
+; 4:1                ; 2 bits    ; 4 LEs         ; 2 LEs                ; 2 LEs                  ; No         ; |Game_PokeD|vga_graphics_connector:graphics_conn_inst|Mux3                                ;
+; 5:1                ; 10 bits   ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |Game_PokeD|player_fsm:p1fsm|tentative_x                                                  ;
+; 5:1                ; 10 bits   ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |Game_PokeD|player_fsm:p2fsm|tentative_x                                                  ;
+; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Game_PokeD|Selector13                                                                    ;
+; 37:1               ; 5 bits    ; 120 LEs       ; 50 LEs               ; 70 LEs                 ; No         ; |Game_PokeD|player_fsm:p2fsm|Selector12                                                   ;
+; 37:1               ; 2 bits    ; 48 LEs        ; 12 LEs               ; 36 LEs                 ; No         ; |Game_PokeD|player_fsm:p2fsm|Selector6                                                    ;
+; 37:1               ; 5 bits    ; 120 LEs       ; 50 LEs               ; 70 LEs                 ; No         ; |Game_PokeD|player_fsm:p1fsm|Selector1                                                    ;
+; 37:1               ; 2 bits    ; 48 LEs        ; 12 LEs               ; 36 LEs                 ; No         ; |Game_PokeD|player_fsm:p1fsm|Selector3                                                    ;
+; 38:1               ; 2 bits    ; 50 LEs        ; 12 LEs               ; 38 LEs                 ; No         ; |Game_PokeD|player_fsm:p2fsm|Selector8                                                    ;
+; 38:1               ; 2 bits    ; 50 LEs        ; 12 LEs               ; 38 LEs                 ; No         ; |Game_PokeD|player_fsm:p2fsm|Selector5                                                    ;
+; 38:1               ; 2 bits    ; 50 LEs        ; 12 LEs               ; 38 LEs                 ; No         ; |Game_PokeD|player_fsm:p1fsm|Selector7                                                    ;
+; 38:1               ; 2 bits    ; 50 LEs        ; 12 LEs               ; 38 LEs                 ; No         ; |Game_PokeD|player_fsm:p1fsm|Selector5                                                    ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------------------------+
+
+
++-----------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: clock_divider_functional:clk25 ;
++----------------+-------+----------------------------------------------------+
+; Parameter Name ; Value ; Type                                               ;
++----------------+-------+----------------------------------------------------+
+; DIVISOR        ; 2     ; Signed Integer                                     ;
++----------------+-------+----------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-----------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: clock_divider_functional:clk60 ;
++----------------+--------+---------------------------------------------------+
+; Parameter Name ; Value  ; Type                                              ;
++----------------+--------+---------------------------------------------------+
+; DIVISOR        ; 833333 ; Signed Integer                                    ;
++----------------+--------+---------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: cpu_bot:cpubot|LFSR_16:lfsr_unit|shift_register:my_shift_register ;
++----------------+-------+---------------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                                  ;
++----------------+-------+---------------------------------------------------------------------------------------+
+; W              ; 16    ; Signed Integer                                                                        ;
++----------------+-------+---------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: vga_driver:vga_driver_inst ;
++----------------+------------+-------------------------------------------+
+; Parameter Name ; Value      ; Type                                      ;
++----------------+------------+-------------------------------------------+
+; H_ACTIVE       ; 1001111111 ; Unsigned Binary                           ;
+; H_FRONT        ; 0000001111 ; Unsigned Binary                           ;
+; H_PULSE        ; 0001011111 ; Unsigned Binary                           ;
+; H_BACK         ; 0000101111 ; Unsigned Binary                           ;
+; V_ACTIVE       ; 0111011111 ; Unsigned Binary                           ;
+; V_FRONT        ; 0000001001 ; Unsigned Binary                           ;
+; V_PULSE        ; 0000000001 ; Unsigned Binary                           ;
+; V_BACK         ; 0000100000 ; Unsigned Binary                           ;
+; LOW            ; 0          ; Unsigned Binary                           ;
+; HIGH           ; 1          ; Unsigned Binary                           ;
+; H_ACTIVE_STATE ; 00000000   ; Unsigned Binary                           ;
+; H_FRONT_STATE  ; 00000001   ; Unsigned Binary                           ;
+; H_PULSE_STATE  ; 00000010   ; Unsigned Binary                           ;
+; H_BACK_STATE   ; 00000011   ; Unsigned Binary                           ;
+; V_ACTIVE_STATE ; 00000000   ; Unsigned Binary                           ;
+; V_FRONT_STATE  ; 00000001   ; Unsigned Binary                           ;
+; V_PULSE_STATE  ; 00000010   ; Unsigned Binary                           ;
+; V_BACK_STATE   ; 00000011   ; Unsigned Binary                           ;
++----------------+------------+-------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: lpm_divide:Mod1 ;
++------------------------+----------------+------------------------+
+; Parameter Name         ; Value          ; Type                   ;
++------------------------+----------------+------------------------+
+; LPM_WIDTHN             ; 8              ; Untyped                ;
+; LPM_WIDTHD             ; 5              ; Untyped                ;
+; LPM_NREPRESENTATION    ; SIGNED         ; Untyped                ;
+; LPM_DREPRESENTATION    ; SIGNED         ; Untyped                ;
+; LPM_PIPELINE           ; 0              ; Untyped                ;
+; LPM_REMAINDERPOSITIVE  ; FALSE          ; Untyped                ;
+; MAXIMIZE_SPEED         ; 5              ; Untyped                ;
+; CBXI_PARAMETER         ; lpm_divide_1go ; Untyped                ;
+; CARRY_CHAIN            ; MANUAL         ; Untyped                ;
+; OPTIMIZE_FOR_SPEED     ; 5              ; Untyped                ;
+; AUTO_CARRY_CHAINS      ; ON             ; AUTO_CARRY             ;
+; IGNORE_CARRY_BUFFERS   ; OFF            ; IGNORE_CARRY           ;
+; AUTO_CASCADE_CHAINS    ; ON             ; AUTO_CASCADE           ;
+; IGNORE_CASCADE_BUFFERS ; OFF            ; IGNORE_CASCADE         ;
++------------------------+----------------+------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: lpm_divide:Div0 ;
++------------------------+----------------+------------------------+
+; Parameter Name         ; Value          ; Type                   ;
++------------------------+----------------+------------------------+
+; LPM_WIDTHN             ; 8              ; Untyped                ;
+; LPM_WIDTHD             ; 5              ; Untyped                ;
+; LPM_NREPRESENTATION    ; SIGNED         ; Untyped                ;
+; LPM_DREPRESENTATION    ; SIGNED         ; Untyped                ;
+; LPM_PIPELINE           ; 0              ; Untyped                ;
+; LPM_REMAINDERPOSITIVE  ; FALSE          ; Untyped                ;
+; MAXIMIZE_SPEED         ; 5              ; Untyped                ;
+; CBXI_PARAMETER         ; lpm_divide_uno ; Untyped                ;
+; CARRY_CHAIN            ; MANUAL         ; Untyped                ;
+; OPTIMIZE_FOR_SPEED     ; 5              ; Untyped                ;
+; AUTO_CARRY_CHAINS      ; ON             ; AUTO_CARRY             ;
+; IGNORE_CARRY_BUFFERS   ; OFF            ; IGNORE_CARRY           ;
+; AUTO_CASCADE_CHAINS    ; ON             ; AUTO_CASCADE           ;
+; IGNORE_CASCADE_BUFFERS ; OFF            ; IGNORE_CASCADE         ;
++------------------------+----------------+------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: lpm_divide:Mod0 ;
++------------------------+----------------+------------------------+
+; Parameter Name         ; Value          ; Type                   ;
++------------------------+----------------+------------------------+
+; LPM_WIDTHN             ; 8              ; Untyped                ;
+; LPM_WIDTHD             ; 5              ; Untyped                ;
+; LPM_NREPRESENTATION    ; SIGNED         ; Untyped                ;
+; LPM_DREPRESENTATION    ; SIGNED         ; Untyped                ;
+; LPM_PIPELINE           ; 0              ; Untyped                ;
+; LPM_REMAINDERPOSITIVE  ; FALSE          ; Untyped                ;
+; MAXIMIZE_SPEED         ; 5              ; Untyped                ;
+; CBXI_PARAMETER         ; lpm_divide_1go ; Untyped                ;
+; CARRY_CHAIN            ; MANUAL         ; Untyped                ;
+; OPTIMIZE_FOR_SPEED     ; 5              ; Untyped                ;
+; AUTO_CARRY_CHAINS      ; ON             ; AUTO_CARRY             ;
+; IGNORE_CARRY_BUFFERS   ; OFF            ; IGNORE_CARRY           ;
+; AUTO_CASCADE_CHAINS    ; ON             ; AUTO_CASCADE           ;
+; IGNORE_CASCADE_BUFFERS ; OFF            ; IGNORE_CASCADE         ;
++------------------------+----------------+------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0 ;
++------------------------+----------------+------------------------------------------------------------------+
+; Parameter Name         ; Value          ; Type                                                             ;
++------------------------+----------------+------------------------------------------------------------------+
+; LPM_WIDTHN             ; 7              ; Untyped                                                          ;
+; LPM_WIDTHD             ; 4              ; Untyped                                                          ;
+; LPM_NREPRESENTATION    ; UNSIGNED       ; Untyped                                                          ;
+; LPM_DREPRESENTATION    ; UNSIGNED       ; Untyped                                                          ;
+; LPM_PIPELINE           ; 0              ; Untyped                                                          ;
+; LPM_REMAINDERPOSITIVE  ; TRUE           ; Untyped                                                          ;
+; MAXIMIZE_SPEED         ; 5              ; Untyped                                                          ;
+; CBXI_PARAMETER         ; lpm_divide_72m ; Untyped                                                          ;
+; CARRY_CHAIN            ; MANUAL         ; Untyped                                                          ;
+; OPTIMIZE_FOR_SPEED     ; 5              ; Untyped                                                          ;
+; AUTO_CARRY_CHAINS      ; ON             ; AUTO_CARRY                                                       ;
+; IGNORE_CARRY_BUFFERS   ; OFF            ; IGNORE_CARRY                                                     ;
+; AUTO_CASCADE_CHAINS    ; ON             ; AUTO_CASCADE                                                     ;
+; IGNORE_CASCADE_BUFFERS ; OFF            ; IGNORE_CASCADE                                                   ;
++------------------------+----------------+------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0 ;
++------------------------+----------------+------------------------------------------------------------------+
+; Parameter Name         ; Value          ; Type                                                             ;
++------------------------+----------------+------------------------------------------------------------------+
+; LPM_WIDTHN             ; 7              ; Untyped                                                          ;
+; LPM_WIDTHD             ; 4              ; Untyped                                                          ;
+; LPM_NREPRESENTATION    ; UNSIGNED       ; Untyped                                                          ;
+; LPM_DREPRESENTATION    ; UNSIGNED       ; Untyped                                                          ;
+; LPM_PIPELINE           ; 0              ; Untyped                                                          ;
+; LPM_REMAINDERPOSITIVE  ; TRUE           ; Untyped                                                          ;
+; MAXIMIZE_SPEED         ; 5              ; Untyped                                                          ;
+; CBXI_PARAMETER         ; lpm_divide_4am ; Untyped                                                          ;
+; CARRY_CHAIN            ; MANUAL         ; Untyped                                                          ;
+; OPTIMIZE_FOR_SPEED     ; 5              ; Untyped                                                          ;
+; AUTO_CARRY_CHAINS      ; ON             ; AUTO_CARRY                                                       ;
+; IGNORE_CARRY_BUFFERS   ; OFF            ; IGNORE_CARRY                                                     ;
+; AUTO_CASCADE_CHAINS    ; ON             ; AUTO_CASCADE                                                     ;
+; IGNORE_CASCADE_BUFFERS ; OFF            ; IGNORE_CASCADE                                                   ;
++------------------------+----------------+------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------+
+; Port Connectivity Checks: "hexto7seg:h5"    ;
++-----------+-------+----------+--------------+
+; Port      ; Type  ; Severity ; Details      ;
++-----------+-------+----------+--------------+
+; hex[3..2] ; Input ; Info     ; Stuck at VCC ;
++-----------+-------+----------+--------------+
+
+
++------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "vga_graphics_connector:graphics_conn_inst|ui_rom:font_rom_instance" ;
++--------------+-------+----------+--------------------------------------------------------------+
+; Port         ; Type  ; Severity ; Details                                                      ;
++--------------+-------+----------+--------------------------------------------------------------+
+; char_code[7] ; Input ; Info     ; Stuck at GND                                                 ;
++--------------+-------+----------+--------------------------------------------------------------+
+
+
++-----------------------------------------------+
+; Port Connectivity Checks: "player_fsm:p2fsm"  ;
++-------------+-------+----------+--------------+
+; Port        ; Type  ; Severity ; Details      ;
++-------------+-------+----------+--------------+
+; main_player ; Input ; Info     ; Stuck at GND ;
++-------------+-------+----------+--------------+
+
+
++-----------------------------------------------+
+; Port Connectivity Checks: "player_fsm:p1fsm"  ;
++-------------+-------+----------+--------------+
+; Port        ; Type  ; Severity ; Details      ;
++-------------+-------+----------+--------------+
+; main_player ; Input ; Info     ; Stuck at VCC ;
++-------------+-------+----------+--------------+
+
+
++-----------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "cpu_bot:cpubot|LFSR_16:lfsr_unit|shift_register:my_shift_register" ;
++----------------+-------+----------+-----------------------------------------------------------+
+; Port           ; Type  ; Severity ; Details                                                   ;
++----------------+-------+----------+-----------------------------------------------------------+
+; shift_left     ; Input ; Info     ; Stuck at GND                                              ;
+; serial_in_left ; Input ; Info     ; Stuck at GND                                              ;
++----------------+-------+----------+-----------------------------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "cpu_bot:cpubot|LFSR_16:lfsr_unit"                                                              ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port            ; Type   ; Severity ; Details                                                                             ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+; seed[11..10]    ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; seed[7..5]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; seed[9..8]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; seed[4..1]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; seed[15]        ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; seed[14]        ; Input  ; Info     ; Stuck at GND                                                                        ;
+; seed[13]        ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; seed[12]        ; Input  ; Info     ; Stuck at GND                                                                        ;
+; seed[0]         ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; LFSR_out[13..4] ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++-----------------------------------------------------+
+; Post-Synthesis Netlist Statistics for Top Partition ;
++-----------------------+-----------------------------+
+; Type                  ; Count                       ;
++-----------------------+-----------------------------+
+; arriav_ff             ; 240                         ;
+;     CLR               ; 77                          ;
+;     CLR SCLR          ; 20                          ;
+;     ENA               ; 6                           ;
+;     ENA CLR           ; 51                          ;
+;     ENA CLR SCLR      ; 33                          ;
+;     ENA SCLR          ; 26                          ;
+;     ENA SCLR SLD      ; 8                           ;
+;     SCLR              ; 17                          ;
+;     plain             ; 2                           ;
+; arriav_io_obuf        ; 36                          ;
+; arriav_lcell_comb     ; 1714                        ;
+;     arith             ; 364                         ;
+;         0 data inputs ; 42                          ;
+;         1 data inputs ; 228                         ;
+;         2 data inputs ; 8                           ;
+;         3 data inputs ; 51                          ;
+;         4 data inputs ; 34                          ;
+;         5 data inputs ; 1                           ;
+;     extend            ; 16                          ;
+;         7 data inputs ; 16                          ;
+;     normal            ; 1298                        ;
+;         0 data inputs ; 2                           ;
+;         1 data inputs ; 15                          ;
+;         2 data inputs ; 174                         ;
+;         3 data inputs ; 199                         ;
+;         4 data inputs ; 204                         ;
+;         5 data inputs ; 230                         ;
+;         6 data inputs ; 474                         ;
+;     shared            ; 36                          ;
+;         0 data inputs ; 8                           ;
+;         1 data inputs ; 26                          ;
+;         3 data inputs ; 2                           ;
+; boundary_port         ; 132                         ;
+;                       ;                             ;
+; Max LUT depth         ; 14.60                       ;
+; Average LUT depth     ; 8.61                        ;
++-----------------------+-----------------------------+
+
+
++-------------------------------+
+; Elapsed Time Per Partition    ;
++----------------+--------------+
+; Partition Name ; Elapsed Time ;
++----------------+--------------+
+; Top            ; 00:00:11     ;
++----------------+--------------+
+
+
++-------------------------------+
+; Analysis & Synthesis Messages ;
++-------------------------------+
+Info: *******************************************************************
+Info: Running Quartus Prime Analysis & Synthesis
+    Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
+    Info: Processing started: Tue Jun 24 21:56:50 2025
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off Game_PokeD -c Game_PokeD
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
+Info (20030): Parallel compilation is enabled and will use 12 of the 12 processors detected
+Info (12021): Found 1 design units, including 1 entities, in source file clock_divider_functional.v
+    Info (12023): Found entity 1: clock_divider_functional File: D:/Users/mehme/Desktop/New folder (2)/clock_divider_functional.v Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file clock_manager_with_divider.v
+    Info (12023): Found entity 1: clock_manager_with_divider File: D:/Users/mehme/Desktop/New folder (2)/clock_manager_with_divider.v Line: 1
+Info (12021): Found 1 design units, including 1 entities, in source file cpu_bot.v
+    Info (12023): Found entity 1: cpu_bot File: D:/Users/mehme/Desktop/New folder (2)/cpu_bot.v Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file debouncer.v
+    Info (12023): Found entity 1: debouncer File: D:/Users/mehme/Desktop/New folder (2)/debouncer.v Line: 5
+Info (12021): Found 1 design units, including 1 entities, in source file game_logic_fsm.v
+    Info (12023): Found entity 1: game_logic_fsm File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 6
+Warning (10275): Verilog HDL Module Instantiation warning at Game_PokeD.v(182): ignored dangling comma in List of Port Connections File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 182
+Warning (10275): Verilog HDL Module Instantiation warning at Game_PokeD.v(205): ignored dangling comma in List of Port Connections File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 205
+Info (12021): Found 1 design units, including 1 entities, in source file game_poked.v
+    Info (12023): Found entity 1: Game_PokeD File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 6
+Info (12021): Found 1 design units, including 1 entities, in source file hexto7seg.v
+    Info (12023): Found entity 1: hexto7seg File: D:/Users/mehme/Desktop/New folder (2)/hexto7seg.v Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file input_handler.v
+    Info (12023): Found entity 1: input_handler File: D:/Users/mehme/Desktop/New folder (2)/input_handler.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file led_driver.v
+    Info (12023): Found entity 1: led_driver File: D:/Users/mehme/Desktop/New folder (2)/led_driver.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file led_output_module.v
+    Info (12023): Found entity 1: LED_Output_module File: D:/Users/mehme/Desktop/New folder (2)/LED_Output_module.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file lfsr_16.v
+    Info (12023): Found entity 1: LFSR_16 File: D:/Users/mehme/Desktop/New folder (2)/LFSR_16.v Line: 1
+Info (12021): Found 1 design units, including 1 entities, in source file player_fsm.v
+    Info (12023): Found entity 1: player_fsm File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 6
+Info (12021): Found 1 design units, including 1 entities, in source file sevensegmentdisplay_module.v
+    Info (12023): Found entity 1: SevenSegmentDisplay_module File: D:/Users/mehme/Desktop/New folder (2)/SevenSegmentDisplay_module.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file shift_register.v
+    Info (12023): Found entity 1: shift_register File: D:/Users/mehme/Desktop/New folder (2)/shift_register.v Line: 1
+Info (12021): Found 1 design units, including 1 entities, in source file ui_rom.v
+    Info (12023): Found entity 1: ui_rom File: D:/Users/mehme/Desktop/New folder (2)/ui_rom.v Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file vga_driver.v
+    Info (12023): Found entity 1: vga_driver File: D:/Users/mehme/Desktop/New folder (2)/vga_driver.v Line: 6
+Info (12021): Found 1 design units, including 1 entities, in source file vga_graphics_connector.v
+    Info (12023): Found entity 1: vga_graphics_connector File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 5
+Info (12021): Found 1 design units, including 1 entities, in source file vga_timing_controller.v
+    Info (12023): Found entity 1: vga_timing_controller File: D:/Users/mehme/Desktop/New folder (2)/vga_timing_controller.v Line: 3
+Info (12127): Elaborating entity "Game_PokeD" for the top level hierarchy
+Warning (10036): Verilog HDL or VHDL warning at Game_PokeD.v(25): object "key0" assigned a value but never read File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 25
+Warning (10036): Verilog HDL or VHDL warning at Game_PokeD.v(26): object "key1" assigned a value but never read File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 26
+Warning (10036): Verilog HDL or VHDL warning at Game_PokeD.v(27): object "key2" assigned a value but never read File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 27
+Warning (10036): Verilog HDL or VHDL warning at Game_PokeD.v(28): object "key3" assigned a value but never read File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 28
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(219): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 219
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(221): truncated value with size 32 to match size of target (12) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 221
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(222): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 222
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(223): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 223
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(226): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 226
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(228): truncated value with size 32 to match size of target (12) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 228
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(229): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 229
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(230): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 230
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(328): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 328
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(329): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 329
+Info (10264): Verilog HDL Case Statement information at Game_PokeD.v(341): all case item expressions in this case statement are onehot File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 341
+Warning (10230): Verilog HDL assignment warning at Game_PokeD.v(389): truncated value with size 32 to match size of target (25) File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 389
+Info (12128): Elaborating entity "clock_divider_functional" for hierarchy "clock_divider_functional:clk25" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 94
+Warning (10230): Verilog HDL assignment warning at clock_divider_functional.v(43): truncated value with size 32 to match size of target (1) File: D:/Users/mehme/Desktop/New folder (2)/clock_divider_functional.v Line: 43
+Info (12128): Elaborating entity "clock_divider_functional" for hierarchy "clock_divider_functional:clk60" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 95
+Warning (10230): Verilog HDL assignment warning at clock_divider_functional.v(43): truncated value with size 32 to match size of target (19) File: D:/Users/mehme/Desktop/New folder (2)/clock_divider_functional.v Line: 43
+Info (12128): Elaborating entity "cpu_bot" for hierarchy "cpu_bot:cpubot" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 142
+Warning (10230): Verilog HDL assignment warning at cpu_bot.v(88): truncated value with size 32 to match size of target (5) File: D:/Users/mehme/Desktop/New folder (2)/cpu_bot.v Line: 88
+Info (12128): Elaborating entity "LFSR_16" for hierarchy "cpu_bot:cpubot|LFSR_16:lfsr_unit" File: D:/Users/mehme/Desktop/New folder (2)/cpu_bot.v Line: 38
+Info (12128): Elaborating entity "shift_register" for hierarchy "cpu_bot:cpubot|LFSR_16:lfsr_unit|shift_register:my_shift_register" File: D:/Users/mehme/Desktop/New folder (2)/LFSR_16.v Line: 19
+Info (12128): Elaborating entity "player_fsm" for hierarchy "player_fsm:p1fsm" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 182
+Warning (10230): Verilog HDL assignment warning at player_fsm.v(68): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 68
+Warning (10230): Verilog HDL assignment warning at player_fsm.v(174): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 174
+Warning (10230): Verilog HDL assignment warning at player_fsm.v(181): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 181
+Warning (10230): Verilog HDL assignment warning at player_fsm.v(213): truncated value with size 32 to match size of target (5) File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 213
+Warning (10230): Verilog HDL assignment warning at player_fsm.v(215): truncated value with size 32 to match size of target (5) File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 215
+Info (10264): Verilog HDL Case Statement information at player_fsm.v(210): all case item expressions in this case statement are onehot File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 210
+Warning (10240): Verilog HDL Always Construct warning at player_fsm.v(190): inferring latch(es) for variable "looking_right", which holds its previous value in one or more paths through the always construct File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 190
+Info (10041): Inferred latch for "looking_right" at player_fsm.v(190) File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 190
+Info (12128): Elaborating entity "game_logic_fsm" for hierarchy "game_logic_fsm:game_logic_inst" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 271
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(78): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 78
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(79): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 79
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(80): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 80
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(81): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 81
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(96): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 96
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(97): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 97
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(98): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 98
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(99): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 99
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(133): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 133
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(134): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 134
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(135): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 135
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(136): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 136
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(147): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 147
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(152): truncated value with size 32 to match size of target (16) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 152
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(160): truncated value with size 32 to match size of target (7) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 160
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(167): truncated value with size 32 to match size of target (6) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 167
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(174): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 174
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(180): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 180
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(190): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 190
+Warning (10230): Verilog HDL assignment warning at game_logic_fsm.v(196): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 196
+Info (12128): Elaborating entity "vga_graphics_connector" for hierarchy "vga_graphics_connector:graphics_conn_inst" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 307
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(131): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 131
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(132): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 132
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(133): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 133
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(145): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 145
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(146): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 146
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(147): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 147
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(171): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 171
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(172): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 172
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(173): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 173
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(201): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 201
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(207): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 207
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(207): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 207
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(222): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 222
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(223): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 223
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(255): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 255
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(258): truncated value with size 32 to match size of target (10) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 258
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(269): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 269
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(270): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 270
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(271): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 271
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(272): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 272
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(278): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 278
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(281): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 281
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(291): truncated value with size 32 to match size of target (4) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 291
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(292): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 292
+Warning (10230): Verilog HDL assignment warning at vga_graphics_connector.v(293): truncated value with size 32 to match size of target (3) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 293
+Warning (10240): Verilog HDL Always Construct warning at vga_graphics_connector.v(90): inferring latch(es) for variable "char_row_to_draw", which holds its previous value in one or more paths through the always construct File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 90
+Info (10041): Inferred latch for "char_row_to_draw[0]" at vga_graphics_connector.v(90) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 90
+Info (10041): Inferred latch for "char_row_to_draw[1]" at vga_graphics_connector.v(90) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 90
+Info (10041): Inferred latch for "char_row_to_draw[2]" at vga_graphics_connector.v(90) File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 90
+Info (12128): Elaborating entity "ui_rom" for hierarchy "vga_graphics_connector:graphics_conn_inst|ui_rom:font_rom_instance" File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 86
+Warning (10030): Net "font_memory.data_a" at ui_rom.v(12) has no driver or initial value, using a default initial value '0' File: D:/Users/mehme/Desktop/New folder (2)/ui_rom.v Line: 12
+Warning (10030): Net "font_memory.waddr_a" at ui_rom.v(12) has no driver or initial value, using a default initial value '0' File: D:/Users/mehme/Desktop/New folder (2)/ui_rom.v Line: 12
+Warning (10030): Net "font_memory.we_a" at ui_rom.v(12) has no driver or initial value, using a default initial value '0' File: D:/Users/mehme/Desktop/New folder (2)/ui_rom.v Line: 12
+Info (12128): Elaborating entity "vga_driver" for hierarchy "vga_driver:vga_driver_inst" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 323
+Info (12128): Elaborating entity "hexto7seg" for hierarchy "hexto7seg:h0" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 375
+Warning (19016): Clock multiplexers are found and protected
+    Warning (19017): Found clock multiplexer effective_game_logic_clk File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 36
+Info (276014): Found 1 instances of uninferred RAM logic
+    Info (276007): RAM logic "vga_graphics_connector:graphics_conn_inst|ui_rom:font_rom_instance|font_memory" is uninferred due to asynchronous read logic File: D:/Users/mehme/Desktop/New folder (2)/ui_rom.v Line: 12
+Info (278001): Inferred 5 megafunctions from design logic
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod1" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 329
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div0" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 328
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod0" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 328
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "vga_graphics_connector:graphics_conn_inst|Mod0" File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 223
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "vga_graphics_connector:graphics_conn_inst|Div0" File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 222
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod1" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 329
+Info (12133): Instantiated megafunction "lpm_divide:Mod1" with the following parameter: File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 329
+    Info (12134): Parameter "LPM_WIDTHN" = "8"
+    Info (12134): Parameter "LPM_WIDTHD" = "5"
+    Info (12134): Parameter "LPM_NREPRESENTATION" = "SIGNED"
+    Info (12134): Parameter "LPM_DREPRESENTATION" = "SIGNED"
+    Info (12134): Parameter "LPM_HINT" = "LPM_REMAINDERPOSITIVE=FALSE"
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_divide_1go.tdf
+    Info (12023): Found entity 1: lpm_divide_1go File: D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_1go.tdf Line: 25
+Info (12021): Found 1 design units, including 1 entities, in source file db/abs_divider_7ag.tdf
+    Info (12023): Found entity 1: abs_divider_7ag File: D:/Users/mehme/Desktop/New folder (2)/db/abs_divider_7ag.tdf Line: 29
+Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_use.tdf
+    Info (12023): Found entity 1: alt_u_div_use File: D:/Users/mehme/Desktop/New folder (2)/db/alt_u_div_use.tdf Line: 23
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_abs_kn9.tdf
+    Info (12023): Found entity 1: lpm_abs_kn9 File: D:/Users/mehme/Desktop/New folder (2)/db/lpm_abs_kn9.tdf Line: 23
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_abs_nn9.tdf
+    Info (12023): Found entity 1: lpm_abs_nn9 File: D:/Users/mehme/Desktop/New folder (2)/db/lpm_abs_nn9.tdf Line: 23
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Div0" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 328
+Info (12133): Instantiated megafunction "lpm_divide:Div0" with the following parameter: File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 328
+    Info (12134): Parameter "LPM_WIDTHN" = "8"
+    Info (12134): Parameter "LPM_WIDTHD" = "5"
+    Info (12134): Parameter "LPM_NREPRESENTATION" = "SIGNED"
+    Info (12134): Parameter "LPM_DREPRESENTATION" = "SIGNED"
+    Info (12134): Parameter "LPM_HINT" = "LPM_REMAINDERPOSITIVE=FALSE"
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_divide_uno.tdf
+    Info (12023): Found entity 1: lpm_divide_uno File: D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_uno.tdf Line: 25
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod0" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 328
+Info (12133): Instantiated megafunction "lpm_divide:Mod0" with the following parameter: File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 328
+    Info (12134): Parameter "LPM_WIDTHN" = "8"
+    Info (12134): Parameter "LPM_WIDTHD" = "5"
+    Info (12134): Parameter "LPM_NREPRESENTATION" = "SIGNED"
+    Info (12134): Parameter "LPM_DREPRESENTATION" = "SIGNED"
+    Info (12134): Parameter "LPM_HINT" = "LPM_REMAINDERPOSITIVE=FALSE"
+Info (12130): Elaborated megafunction instantiation "vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0" File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 223
+Info (12133): Instantiated megafunction "vga_graphics_connector:graphics_conn_inst|lpm_divide:Mod0" with the following parameter: File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 223
+    Info (12134): Parameter "LPM_WIDTHN" = "7"
+    Info (12134): Parameter "LPM_WIDTHD" = "4"
+    Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
+    Info (12134): Parameter "LPM_DREPRESENTATION" = "UNSIGNED"
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_divide_72m.tdf
+    Info (12023): Found entity 1: lpm_divide_72m File: D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_72m.tdf Line: 25
+Info (12021): Found 1 design units, including 1 entities, in source file db/sign_div_unsign_akh.tdf
+    Info (12023): Found entity 1: sign_div_unsign_akh File: D:/Users/mehme/Desktop/New folder (2)/db/sign_div_unsign_akh.tdf Line: 25
+Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_qse.tdf
+    Info (12023): Found entity 1: alt_u_div_qse File: D:/Users/mehme/Desktop/New folder (2)/db/alt_u_div_qse.tdf Line: 23
+Info (12130): Elaborated megafunction instantiation "vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0" File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 222
+Info (12133): Instantiated megafunction "vga_graphics_connector:graphics_conn_inst|lpm_divide:Div0" with the following parameter: File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 222
+    Info (12134): Parameter "LPM_WIDTHN" = "7"
+    Info (12134): Parameter "LPM_WIDTHD" = "4"
+    Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
+    Info (12134): Parameter "LPM_DREPRESENTATION" = "UNSIGNED"
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_divide_4am.tdf
+    Info (12023): Found entity 1: lpm_divide_4am File: D:/Users/mehme/Desktop/New folder (2)/db/lpm_divide_4am.tdf Line: 25
+Warning (13039): The following bidirectional pins have no drivers
+    Warning (13040): bidirectional pin "GPIO[1]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[3]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[5]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[0]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[2]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[4]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[6]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[7]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[8]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[10]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[11]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[12]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[13]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[14]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[15]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[16]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[17]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[18]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[19]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[20]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[21]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[22]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[23]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[24]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[25]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[26]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[27]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[28]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[29]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[30]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[31]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[32]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[33]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[34]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+    Warning (13040): bidirectional pin "GPIO[35]" has no driver File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+Warning (13032): The following tri-state nodes are fed by constants
+    Warning (13033): The pin "GPIO[9]" is fed by GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 13
+Warning (13012): Latch vga_graphics_connector:graphics_conn_inst|char_row_to_draw[0] has unsafe behavior File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 90
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal game_logic_fsm:game_logic_inst|game_phase_out[0] File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 115
+Warning (13012): Latch vga_graphics_connector:graphics_conn_inst|char_row_to_draw[1] has unsafe behavior File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 90
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal vga_driver:vga_driver_inst|v_counter[1] File: D:/Users/mehme/Desktop/New folder (2)/vga_driver.v Line: 65
+Warning (13012): Latch vga_graphics_connector:graphics_conn_inst|char_row_to_draw[2] has unsafe behavior File: D:/Users/mehme/Desktop/New folder (2)/vga_graphics_connector.v Line: 90
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal game_logic_fsm:game_logic_inst|game_phase_out[0] File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 115
+Info (13000): Registers with preset signals will power-up high File: D:/Users/mehme/Desktop/New folder (2)/player_fsm.v Line: 203
+Info (13003): DEV_CLRn pin will set, and not reset, register with preset signal due to NOT Gate Push-Back
+Warning (13024): Output pins are stuck at VCC or GND
+    Warning (13410): Pin "HEX2[3]" is stuck at VCC File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 8
+    Warning (13410): Pin "HEX2[4]" is stuck at VCC File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 8
+    Warning (13410): Pin "HEX3[1]" is stuck at VCC File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 9
+    Warning (13410): Pin "HEX4[5]" is stuck at VCC File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 9
+    Warning (13410): Pin "HEX5[2]" is stuck at VCC File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 9
+    Warning (13410): Pin "HEX5[3]" is stuck at VCC File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 9
+    Warning (13410): Pin "VGA_B[0]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 14
+    Warning (13410): Pin "VGA_B[1]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 14
+    Warning (13410): Pin "VGA_B[2]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 14
+    Warning (13410): Pin "VGA_B[3]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 14
+    Warning (13410): Pin "VGA_B[4]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 14
+    Warning (13410): Pin "VGA_B[5]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 14
+    Warning (13410): Pin "VGA_G[0]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_G[1]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_G[2]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_G[3]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_G[4]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_R[0]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_R[1]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_R[2]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_R[3]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_R[4]" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 15
+    Warning (13410): Pin "VGA_SYNC_N" is stuck at GND File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 16
+Info (286030): Timing-Driven Synthesis is running
+Critical Warning (18061): Ignored Power-Up Level option on the following registers
+    Critical Warning (18010): Register game_logic_fsm:game_logic_inst|o_software_reset will power up to High File: D:/Users/mehme/Desktop/New folder (2)/game_logic_fsm.v Line: 45
+Info (17049): 24 registers lost all their fanouts during netlist optimizations.
+Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
+    Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
+Warning (21074): Design contains 7 input pin(s) that do not drive logic
+    Warning (15610): No output dependent on input pin "SW[2]" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 11
+    Warning (15610): No output dependent on input pin "SW[3]" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 11
+    Warning (15610): No output dependent on input pin "SW[4]" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 11
+    Warning (15610): No output dependent on input pin "SW[6]" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 11
+    Warning (15610): No output dependent on input pin "SW[7]" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 11
+    Warning (15610): No output dependent on input pin "SW[8]" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 11
+    Warning (15610): No output dependent on input pin "SW[9]" File: D:/Users/mehme/Desktop/New folder (2)/Game_PokeD.v Line: 11
+Info (21057): Implemented 1863 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 15 input pins
+    Info (21059): Implemented 81 output pins
+    Info (21060): Implemented 36 bidirectional pins
+    Info (21061): Implemented 1731 logic cells
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 156 warnings
+    Info: Peak virtual memory: 4887 megabytes
+    Info: Processing ended: Tue Jun 24 21:57:09 2025
+    Info: Elapsed time: 00:00:19
+    Info: Total CPU time (on all processors): 00:00:29
+
+

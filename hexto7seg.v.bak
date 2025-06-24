@@ -1,0 +1,47 @@
+// hexto7seg.v
+// - DÜZELTME: "FIGHT", "P1", "P2", "drAW" için gerekli tüm
+//   7-segment desenleri eklendi ve düzenlendi.
+module hexto7seg (
+    output reg [6:0] hexn, 
+    input [3:0] hex
+);
+	
+	always @ (hex) begin
+		case (hex)      // Segments: gfedcba
+			// --- Sayılar ---
+			4'h0: hexn = 7'b1000000; // 0
+			4'h1: hexn = 7'b1111001; // 1
+			4'h2: hexn = 7'b0100100; // 2
+			4'h3: hexn = 7'b0110000; // 3
+			4'h4: hexn = 7'b0011001; // 4
+			4'h5: hexn = 7'b0010010; // 5
+			4'h6: hexn = 7'b0000010; // 6
+			4'h7: hexn = 7'b1111000; // 7
+			4'h8: hexn = 7'b0000000; // 8
+			4'h9: hexn = 7'b0010000; // 9
+			
+			// --- Özel Karakterler ---
+			4'hA: hexn = 7'b0001000; // A
+			4'hB: hexn = 7'b1111111; // BLANK (boş)
+			4'hC: hexn = 7'b0001100; // P
+			4'hD: hexn = 7'b0100001; // d
+			4'hE: hexn = 7'b0001110; // F
+			
+			// --- FIGHT için özel harfler (bazıları diğerleriyle aynı) ---
+			// F -> 4'hE
+			// I -> 4'h1
+			// G -> 4'h6
+			// H -> 4'h4 (h gibi)
+			// T -> 4'h7 (t gibi)
+
+            // --- DRAW için özel harfler ---
+            // d -> 4'hD
+            // r -> 4'hF (F ile aynı, en yakın desen)
+            // A -> 4'hA
+            // W -> (yok, boş bırakılacak)
+
+			default: hexn = 7'b1111111; // Bilinmeyen karakter için ekranı kapat
+		endcase
+	end
+
+endmodule

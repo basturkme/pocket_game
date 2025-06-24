@@ -1,0 +1,46 @@
+
+State Machine - |Game_PokeD|vga_driver:vga_driver_inst|v_state
+Name v_state.V_BACK_STATE v_state.V_PULSE_STATE v_state.V_FRONT_STATE v_state.V_ACTIVE_STATE 
+v_state.V_ACTIVE_STATE 0 0 0 0 
+v_state.V_FRONT_STATE 0 0 1 1 
+v_state.V_PULSE_STATE 0 1 0 1 
+v_state.V_BACK_STATE 1 0 0 1 
+
+State Machine - |Game_PokeD|vga_driver:vga_driver_inst|h_state
+Name h_state.H_BACK_STATE h_state.H_PULSE_STATE h_state.H_FRONT_STATE h_state.H_ACTIVE_STATE 
+h_state.H_ACTIVE_STATE 0 0 0 0 
+h_state.H_FRONT_STATE 0 0 1 1 
+h_state.H_PULSE_STATE 0 1 0 1 
+h_state.H_BACK_STATE 1 0 0 1 
+
+State Machine - |Game_PokeD|player_fsm:p2fsm|current_state_reg
+Name current_state_reg.S_BLOCKING_IDLE current_state_reg.S_PRE_ATTACK_CHARGE current_state_reg.S_BLOCKSTUN current_state_reg.S_HITSTUN current_state_reg.S_M_ATK_RECOVERY current_state_reg.S_M_ATK_ACTIVE current_state_reg.S_M_ATK_STARTUP current_state_reg.S_N_ATK_RECOVERY current_state_reg.S_N_ATK_ACTIVE current_state_reg.S_N_ATK_STARTUP current_state_reg.S_MOVE_LEFT current_state_reg.S_MOVE_RIGHT current_state_reg.S_IDLE 
+current_state_reg.S_IDLE 0 0 0 0 0 0 0 0 0 0 0 0 0 
+current_state_reg.S_MOVE_RIGHT 0 0 0 0 0 0 0 0 0 0 0 1 1 
+current_state_reg.S_MOVE_LEFT 0 0 0 0 0 0 0 0 0 0 1 0 1 
+current_state_reg.S_N_ATK_STARTUP 0 0 0 0 0 0 0 0 0 1 0 0 1 
+current_state_reg.S_N_ATK_ACTIVE 0 0 0 0 0 0 0 0 1 0 0 0 1 
+current_state_reg.S_N_ATK_RECOVERY 0 0 0 0 0 0 0 1 0 0 0 0 1 
+current_state_reg.S_M_ATK_STARTUP 0 0 0 0 0 0 1 0 0 0 0 0 1 
+current_state_reg.S_M_ATK_ACTIVE 0 0 0 0 0 1 0 0 0 0 0 0 1 
+current_state_reg.S_M_ATK_RECOVERY 0 0 0 0 1 0 0 0 0 0 0 0 1 
+current_state_reg.S_HITSTUN 0 0 0 1 0 0 0 0 0 0 0 0 1 
+current_state_reg.S_BLOCKSTUN 0 0 1 0 0 0 0 0 0 0 0 0 1 
+current_state_reg.S_PRE_ATTACK_CHARGE 0 1 0 0 0 0 0 0 0 0 0 0 1 
+current_state_reg.S_BLOCKING_IDLE 1 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |Game_PokeD|player_fsm:p1fsm|current_state_reg
+Name current_state_reg.S_BLOCKING_IDLE current_state_reg.S_PRE_ATTACK_CHARGE current_state_reg.S_BLOCKSTUN current_state_reg.S_HITSTUN current_state_reg.S_M_ATK_RECOVERY current_state_reg.S_M_ATK_ACTIVE current_state_reg.S_M_ATK_STARTUP current_state_reg.S_N_ATK_RECOVERY current_state_reg.S_N_ATK_ACTIVE current_state_reg.S_N_ATK_STARTUP current_state_reg.S_MOVE_LEFT current_state_reg.S_MOVE_RIGHT current_state_reg.S_IDLE 
+current_state_reg.S_IDLE 0 0 0 0 0 0 0 0 0 0 0 0 0 
+current_state_reg.S_MOVE_RIGHT 0 0 0 0 0 0 0 0 0 0 0 1 1 
+current_state_reg.S_MOVE_LEFT 0 0 0 0 0 0 0 0 0 0 1 0 1 
+current_state_reg.S_N_ATK_STARTUP 0 0 0 0 0 0 0 0 0 1 0 0 1 
+current_state_reg.S_N_ATK_ACTIVE 0 0 0 0 0 0 0 0 1 0 0 0 1 
+current_state_reg.S_N_ATK_RECOVERY 0 0 0 0 0 0 0 1 0 0 0 0 1 
+current_state_reg.S_M_ATK_STARTUP 0 0 0 0 0 0 1 0 0 0 0 0 1 
+current_state_reg.S_M_ATK_ACTIVE 0 0 0 0 0 1 0 0 0 0 0 0 1 
+current_state_reg.S_M_ATK_RECOVERY 0 0 0 0 1 0 0 0 0 0 0 0 1 
+current_state_reg.S_HITSTUN 0 0 0 1 0 0 0 0 0 0 0 0 1 
+current_state_reg.S_BLOCKSTUN 0 0 1 0 0 0 0 0 0 0 0 0 1 
+current_state_reg.S_PRE_ATTACK_CHARGE 0 1 0 0 0 0 0 0 0 0 0 0 1 
+current_state_reg.S_BLOCKING_IDLE 1 0 0 0 0 0 0 0 0 0 0 0 1 

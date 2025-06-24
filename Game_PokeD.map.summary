@@ -1,0 +1,17 @@
+Analysis & Synthesis Status : Successful - Tue Jun 24 21:57:09 2025
+Quartus Prime Version : 23.1std.1 Build 993 05/14/2024 SC Lite Edition
+Revision Name : Game_PokeD
+Top-level Entity Name : Game_PokeD
+Family : Cyclone V
+Logic utilization (in ALMs) : N/A
+Total registers : 240
+Total pins : 132
+Total virtual pins : 0
+Total block memory bits : 0
+Total DSP Blocks : 0
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 0
+Total DLLs : 0
