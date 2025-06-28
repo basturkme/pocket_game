@@ -6,4 +6,6 @@ The project provides invaluable hands-on experience in digital system design and
 
 
 SEE THE GAMEPLAY: https://www.youtube.com/watch?v=hqgp_Lv09Uo
+
+
 Contributors: Mehmet Baştürk, Yusuf Berat Bölükbaş, Emin Özberk Akkan.
