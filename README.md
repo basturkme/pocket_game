@@ -1,6 +1,6 @@
 This is our Verilog based arcade two-player fight game, aka GamePokeD, that we create from scratch.
 
-Game is especially prepared for the FPGA's. Basic finite state machine algorithms are used to create game logic and player logics.
+The game is specifically designed for FPGAs. Finite state machines (FSMs) are used to implement the game and player logic.
 
 This game is a realtime system created using Verilog HDL through Intel Quartus. This project is inspired by an open-source fighting game called ”Footsies” which is based on the FPGA-based FPGA.
 
